@@ -66,7 +66,7 @@ function peerSetup() {
         //         delete branchConnections[branchId];
         //     });
         // }
-        peer.requestBranch(peer.branchData.branchSrc.id);
+        peer.requestBranch(peer.branchData.branchSrcId);
     });
 
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
