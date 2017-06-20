@@ -115,32 +115,6 @@ function callSetup(call) {
     });
 }
 
-function migrateBranch(closeId) {
-    dstData = peer.dicBranches[closeId];
-    delete peer.dicBranches[closeId];
-    var dstLevel = dstData.level;
-
-    var lastLevel = peer.levelBranches.length - 1;
-    var oldData = peer.levelBranches[lastLevel].shift();
-    if (Object.keys(peer.levelBranches[lastLevel]).length === 0) {
-        peer.levelBranches[lastLevel].pop();
-    }
-
-    delete dstData.branchSRC.children[dstData.id];
-    dstData.branchSRC.children[oldData.id] = dstData;
-
-    delete peer.levelBranches[dstData.level][dstData.id];
-    peer.levelBranches[dstData.level][oldData.id] = dstData;
-
-    delete peer.dicBranches[dstData.id];
-    peer.dicBranches[oldData.id] = dstData;
-
-    dstData.id = oldData.id;
-
-    peer.closeNotifiyIgnoreIds[dstData.id] = true;
-
-    return dstData;
-}
 
 function addLogMsg(str, type) {
     const msgType = document.createElement('span');

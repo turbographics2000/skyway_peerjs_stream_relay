@@ -25,7 +25,7 @@ function PeerClassExtend() {
 
     Peer.prototype.responseBranchData = function (branchData, dstId) {
         console.log('notifyBranchData', 'send_notify');
-        this.sendNotify(Object.assign({orgType: 'branch_data'}, branchData), dstId);
+        this.sendNotify(Object.assign({ orgType: 'branch_data' }, branchData), dstId);
     };
 
     Peer.prototype.sendNotify = function (notifyMsg, dstId) {
@@ -61,7 +61,7 @@ function PeerClassExtend() {
         }
     };
 
-    Peer.prototype.addBranch = function (remoteId, level) {
+    Peer.prototype.addBranch = function (remoteId, level = 0) {
         let branches = this.levelBranches[level];
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
@@ -75,6 +75,33 @@ function PeerClassExtend() {
             }
         }
         this.addBranch(remoteId, level + 1);
+    };
+
+    Peer.prototype.migrateBranch = function (closeId) {
+        dstData = peer.dicBranches[closeId];
+        delete peer.dicBranches[closeId];
+        var dstLevel = dstData.level;
+
+        var lastLevel = peer.levelBranches.length - 1;
+        var oldData = peer.levelBranches[lastLevel].shift();
+        if (Object.keys(peer.levelBranches[lastLevel]).length === 0) {
+            peer.levelBranches[lastLevel].pop();
+        }
+
+        delete dstData.branchSRC.children[dstData.id];
+        dstData.branchSRC.children[oldData.id] = dstData;
+
+        delete peer.levelBranches[dstData.level][dstData.id];
+        peer.levelBranches[dstData.level][oldData.id] = dstData;
+
+        delete peer.dicBranches[dstData.id];
+        peer.dicBranches[oldData.id] = dstData;
+
+        dstData.id = oldData.id;
+
+        peer.closeNotifiyIgnoreIds[dstData.id] = true;
+
+        return dstData;
     };
 }
 
