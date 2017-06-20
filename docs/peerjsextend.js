@@ -44,22 +44,22 @@ function PeerClassExtend() {
 
     Peer.prototype.initBranch = function (remoteId) {
         var branchData = this.createBranchData(remoteId, { id: 'root' }, 0);
-        this.levelBranches[0] = { 
+        this.levelBranches.push({
             [remoteId]: branchData
-        };
+        });
         this.dicBranches = {
             [remoteId]: branchData
         };
         return branchData;
     };
 
-    Peer.prototype.createBranchData = function (id, branchSrc, level) {
+    Peer.prototype.createBranchData = function (id, branchSrcId, level) {
         return {
             rootId: this.rootId,
             id,
-            branchSrc,
+            branchSrcId,
             level,
-            children: {}
+            children: []
         }
     };
 
@@ -68,10 +68,13 @@ function PeerClassExtend() {
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
             var branchId = branchIds[i];
-            if (Object.keys(branches[branchId].children).length < maxBranchCnt) {
-                var branchData = this.createBranchData(remoteId, branches[branchId], level + 1);
-                this.dicBranches[remoteId] = branches[branchId].children[remoteId] = branchData;
-                this.levelBranches[level + 1] = this.levelBranches[level + 1] || {};
+            if (branches[branchId].children.length < maxBranchCnt) {
+                var branchData = this.createBranchData(remoteId, branchId, level + 1);
+                branches[branchId].children.push(remoteId);
+                this.dicBranches[remoteId] = branchData;
+                if (this.levelBranches.length === level + 1) {
+                    this.levelBranches.push({});
+                }
                 this.levelBranches[level + 1][remoteId] = branchData;
                 return branchData;
             }
@@ -80,36 +83,44 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.migrateBranch = function (closeId) {
-        dstData = peer.dicBranches[closeId];
-        delete peer.dicBranches[closeId];
-        var dstLevel = dstData.level;
+        var lastLevel = this.levelBranches.length - 1;
+        var closeData = this.dicBranches[closeId];
+        if(closeData.level === lastLevel) return;
 
-        var lastLevel = peer.levelBranches.length - 1;
-        var oldData = peer.levelBranches[lastLevel].shift();
-        if (Object.keys(peer.levelBranches[lastLevel]).length === 0) {
-            peer.levelBranches[lastLevel].pop();
+        var lastLevelBranches = this.levelBranches[lastLevel];
+        var lastLevelBranchIds = Object.keys(lastLevelBranches);
+        var migrateData = lastLevelBranches(lastLevelBranchIds[0]);
+        delete lastLevelBranches[lastLevelBranchIds[0]];
+        if (migrateData.level > 0) {
+            var oldBranchSrcData = this.levelBranches[migrateData.level - 1][migrateData.branchSrcId];
+            oldBranchSrcData.children.splice(oldBranchSrcData.children.indexOf(migrateData.id), 1);
+        }
+        if (lastLevelBranchIds.length === 1) {
+            this.levelBranches[lastLevel].pop();
         }
 
-        delete dstData.branchSRC.children[dstData.id];
-        dstData.branchSRC.children[oldData.id] = dstData;
+        if (closeData.level > 0) {
+            var closeBranchSrcData = this.levelBranches[closeData.level - 1][closeData.branchSrcId];
+            closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
+            closeBranchSrcData.children.push(migrateData.id);
+        }
+        closeData.children.forEach(childId => {
+            this.levelBranches[closeData.level + 1][childId].branchSrcId = migrateData.id;
+        });
 
-        delete peer.levelBranches[dstData.level][dstData.id];
-        peer.levelBranches[dstData.level][oldData.id] = dstData;
+        closeData.id = migrateData.id;
+        delete this.dicBranches[closeId];
+        this.dicBranches[migrateData.id] = closeData;
 
-        delete peer.dicBranches[dstData.id];
-        peer.dicBranches[oldData.id] = dstData;
+        peer.closeNotifiyIgnoreIds[closeId] = true;
 
-        dstData.id = oldData.id;
-
-        peer.closeNotifiyIgnoreIds[dstData.id] = true;
-
-        return dstData;
+        return closeData;
     };
 }
 
 function peerInstanceExtend(peer) {
     peer.rootId = null;
-    peer.levelBranches = {};
+    peer.levelBranches = [];
     peer.dicBranches = {};
     peer.branchData = null;
     peer.branchSrcConnection = null;
