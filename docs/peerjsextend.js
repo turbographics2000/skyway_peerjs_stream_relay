@@ -32,7 +32,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.sendNotify = function (notifyMsg) {
-        addLogMsg(o)
+        addLogMsg(notifyMsg.orgType, 'send_notify');
         var msg = {
             type: 'PING',
             dst: 'root',
