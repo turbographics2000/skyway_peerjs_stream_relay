@@ -3,7 +3,7 @@ function PeerClassExtend() {
         console.log('notifyJoin', 'send_notify');
         this.sendNotify({
             orgType: 'join',
-            join: this.id
+            joinId: this.id
         }, this.rootId);
     };
 

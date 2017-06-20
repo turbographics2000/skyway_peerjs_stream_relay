@@ -38,17 +38,17 @@ function peerSetup() {
     });
 
     // 新規視聴者(ブランチ)が参加したとき、放送主側で発生するイベント
-    peer.on('join', joinId => {
+    peer.on('join', joinData => {
         addLogMsg('join', 'event');
         var branchData;
         // 視聴者(ブランチ)配置する
         if (peer.levelBranches[0] === undefined) {
-            branchData = peer.initBranch(joinId);
+            branchData = peer.initBranch(joinData.joinId);
         } else {
-            branchData = peer.addBranch(joinId);
+            branchData = peer.addBranch(joinData.joinId);
         }
         // 配置結果を視聴者(ブランチ)に知らせる
-        peer.responseBranchData(branchData, joinId);
+        peer.responseBranchData(branchData, joinData.joinId);
     });
 
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
