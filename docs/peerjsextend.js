@@ -84,6 +84,7 @@ function peerInstanceExtend(peer) {
     peer.branchData = null;
     peer.branchSrcConnection = null;
     peer.branchConnections = {};
+    peer.closeNotifiyIgnoreIds = {};
 
     peer.socket.on('message', function(message) {
         var type = message.type;

@@ -1,6 +1,5 @@
 var apiKey = 'ce16d9aa-4119-4097-a8a5-3a5016c6a81c';
 var debugLevel = 2;
-var closeNotifiyIgnoreIds = {};
 var myId = null;
 var stream = null;
 var peer = null;
@@ -42,7 +41,7 @@ function peerSetup() {
         addLogMsg('join', 'event');
         var branchData;
         // 視聴者(ブランチ)配置する
-        if (levelBranches[0] === undefined) {
+        if (peer.levelBranches[0] === undefined) {
             branchData = initBranch(joinId);
         } else {
             branchData = addBranch(joinId);
@@ -55,9 +54,9 @@ function peerSetup() {
     peer.on('branch_data', data => {
         addLogMsg('branch_data', 'event');
         branchData = data;
-        if (branchSrcConnection) {
-            branchSrcConnection.close();
-            branchSrcConnection = null;
+        if (peer.branchSrcConnection) {
+            peer.branchSrcConnection.close();
+            peer.branchSrcConnection = null;
         }
         // if (branchConnections) {
         //     Object.keys(branchConnections).forEach(branchId => {
@@ -71,7 +70,7 @@ function peerSetup() {
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_branch', branchId => {
         addLogMsg('request_branch', 'event');
-        branchConnections[branchId] = peer.call(branchId, stream);
+        peer.branchConnections[branchId] = peer.call(branchId, stream);
     });
 
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
@@ -79,8 +78,8 @@ function peerSetup() {
     // その報告を受信したとき放送主(ルート)側で発生するイベント
     peer.on('close_branch', closeId => {
         console.log('peer on "close_branch"');
-        if (closeNotifiyIgnoreIds[remoteId]) {
-            delete closeNotifiyIgnoreIds[remoteId];
+        if (peer.closeNotifiyIgnoreIds[remoteId]) {
+            delete peer.closeNotifiyIgnoreIds[remoteId];
             return;
         }
         peer.migrateBranch(closeId);
@@ -101,43 +100,43 @@ function callSetup(call) {
     call.on('stream', stream => {
         console.log('call on "stream"');
         remoteView.srcObject = stream;
-        Object.keys(branchData.children).forEach(branchId => {
-            branchConnections[branchId] = peer.call(branchId, stream);
+        Object.keys(peer.branchData.children).forEach(branchId => {
+            peer.branchConnections[branchId] = peer.call(branchId, stream);
         });
     });
     call.on('close', _ => {
         console.log('call on "close"');
         if (myId === 'root') {
             migrateBranch(call.peer);
-        } else if (Object.keys(branchConections).includes(call.peer)) {
+        } else if (Object.keys(peer.ranchConections).includes(call.peer)) {
             notifyCloseBranch(call.peer);
         }
     });
 }
 
 function migrateBranch(closeId) {
-    dstData = dicBranches[closeId];
-    delete dicBranches[closeId];
+    dstData = peer.dicBranches[closeId];
+    delete peer.dicBranches[closeId];
     var dstLevel = dstData.level;
 
-    var lastLevel = levelBranches.length - 1;
-    var oldData = levelBranches[lastLevel].shift();
-    if (Object.keys(levelBranches[lastLevel]).length === 0) {
-        levelBranches[lastLevel].pop();
+    var lastLevel = peer.levelBranches.length - 1;
+    var oldData = peer.levelBranches[lastLevel].shift();
+    if (Object.keys(peer.levelBranches[lastLevel]).length === 0) {
+        peer.levelBranches[lastLevel].pop();
     }
 
     delete dstData.branchSRC.children[dstData.id];
     dstData.branchSRC.children[oldData.id] = dstData;
 
-    delete levelBranches[dstData.level][dstData.id];
-    levelBranches[dstData.level][oldData.id] = dstData;
+    delete peer.levelBranches[dstData.level][dstData.id];
+    peer.levelBranches[dstData.level][oldData.id] = dstData;
 
-    delete dicBranches[dstData.id];
-    dicBranches[oldData.id] = dstData;
+    delete peer.dicBranches[dstData.id];
+    peer.dicBranches[oldData.id] = dstData;
 
     dstData.id = oldData.id;
 
-    closeNotifiyIgnoreIds[dstData.id] = true;
+    peer.closeNotifiyIgnoreIds[dstData.id] = true;
 
     return dstData;
 }
