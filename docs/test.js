@@ -71,7 +71,7 @@ function peerSetup() {
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_branch', req => {
         addLogMsg('request_branch', 'event');
-        peer.branchConnections[branchId] = peer.call(req.fromId, stream);
+        peer.branchConnections[req.fromId] = peer.call(req.fromId, stream);
     });
 
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
