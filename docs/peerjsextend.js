@@ -19,7 +19,7 @@ function PeerClassExtend() {
         console.log('requestBranch', 'send_notify');
         this.sendNotify({
             orgType: 'request_branch',
-            requestBranch: this.id
+            fromId: this.id
         }, branchSrcId);
     };
 
