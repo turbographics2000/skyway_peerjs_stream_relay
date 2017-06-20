@@ -24,7 +24,7 @@ function peerSetup() {
         console.log('peer on "open"');
         myIdDisp.textContent = myId = id;
         if (id === 'root') {
-            webCamSetup(selfView).then(_ => { });
+            webCamSetup(selfView).then(strm => stream = strm );
         } else {
             peer.notifyJoin();
         }
