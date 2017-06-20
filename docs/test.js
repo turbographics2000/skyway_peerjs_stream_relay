@@ -33,7 +33,7 @@ function peerSetup() {
     });
 
     peer.on('call', call => {
-        addLogMsg('peer on "call"');
+        console.log('peer on "call"');
         call.answer(null);
         callSetup(call);
     });
