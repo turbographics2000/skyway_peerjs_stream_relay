@@ -35,7 +35,10 @@ function PeerClassExtend() {
         addLogMsg(notifyMsg.orgType, 'send_notify');
         var msg = {
             type: 'CANDIDATE',
-            payload: { candidate: null },
+            payload: { 
+                candidate: null,
+                type: 'media' 
+            },
             dst: dstId,
             notifyMsg
         }
