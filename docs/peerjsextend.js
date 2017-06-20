@@ -4,23 +4,7 @@ function PeerClassExtend() {
         this.sendNotify({
             orgType: 'join',
             join: this.id
-        });
-    };
-
-    Peer.prototype.notifyBranchData = function (branchData) {
-        console.log('notifyBranchData', 'send_notify');
-        this.sendNotify({
-            orgType: 'branch_data',
-            branchData
-        })
-    };
-
-    Peer.prototype.requestBranch = function () {
-        console.log('requestBranch', 'send_notify');
-        this.sendNotify({
-            orgType: 'request_branch',
-            requestBranch: this.id
-        });
+        }, this.rootId);
     };
 
     Peer.prototype.notifyCloseBranch = function (closeId) {
@@ -28,14 +12,30 @@ function PeerClassExtend() {
         this.sendNotify({
             orgType: 'close_branch',
             closeBranch: closeId
-        });
+        }, this.rootId);
     };
 
-    Peer.prototype.sendNotify = function (notifyMsg) {
+    Peer.prototype.requestBranch = function (branchSrcId) {
+        console.log('requestBranch', 'send_notify');
+        this.sendNotify({
+            orgType: 'request_branch',
+            requestBranch: this.id
+        }, branchSrcId);
+    };
+
+    Peer.prototype.responseBranchData = function (branchData, dstId) {
+        console.log('notifyBranchData', 'send_notify');
+        this.sendNotify({
+            orgType: 'branch_data',
+            branchData
+        }, dstId);
+    };
+
+    Peer.prototype.sendNotify = function (notifyMsg, dstId) {
         addLogMsg(notifyMsg.orgType, 'send_notify');
         var msg = {
             type: 'PING',
-            dst: 'root',
+            dst: dstId,
             notifyMsg
         }
         this.socket.send(msg);

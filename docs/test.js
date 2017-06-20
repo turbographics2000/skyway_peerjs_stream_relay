@@ -13,6 +13,7 @@ btnRootStart.onclick = evt => {
 }
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
+    peer.rootId = 'root';
     peerSetup();
 }
 
@@ -46,8 +47,8 @@ function peerSetup() {
         } else {
             branchData = peer.addBranch(joinId);
         }
-        // 配置結果を視聴者に知らせる
-        peer.notifyBranchData(branchData);
+        // 配置結果を視聴者(ブランチ)に知らせる
+        peer.responseBranchData(branchData, joinId);
     });
 
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
@@ -64,7 +65,7 @@ function peerSetup() {
         //         delete branchConnections[branchId];
         //     });
         // }
-        peer.requestBranch();
+        peer.requestBranch(branchData.branchSrc.id);
     });
 
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
