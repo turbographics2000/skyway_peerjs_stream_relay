@@ -46,7 +46,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.initBranch = function (remoteId) {
-        var branchData = this.createBranchData(remoteId, { id: 'root' }, 0);
+        var branchData = this.createBranchData(remoteId, , 0);
         this.levelBranches[0] = branchData;
         this.dicBranches = {
             [remoteId]: branchData
@@ -54,9 +54,9 @@ function PeerClassExtend() {
         return branchData;
     };
 
-    Peer.prototype.createBranchData = function (rootId, id, branchSrc, level) {
+    Peer.prototype.createBranchData = function (id, branchSrc, level) {
         return {
-            rootId,
+            rootId: this.rootId,
             id,
             branchSrc,
             level,
