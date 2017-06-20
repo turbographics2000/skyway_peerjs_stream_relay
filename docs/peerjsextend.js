@@ -34,7 +34,7 @@ function PeerClassExtend() {
     Peer.prototype.sendNotify = function (notifyMsg, dstId) {
         addLogMsg(notifyMsg.orgType, 'send_notify');
         var msg = {
-            type: 'PING',
+            type: 'FUGA',
             dst: dstId,
             notifyMsg
         }
@@ -87,9 +87,10 @@ function peerInstanceExtend(peer) {
     peer.closeNotifiyIgnoreIds = {};
 
     peer.socket.on('message', function(message) {
+
         var type = message.type;
         switch (type) {
-            case 'PING':
+            case 'FUGA':
                 if (message.notifyMsg) {
                     addLogMsg(message.notifyMsg.orgType, 'receive_notify');
                     console.log('receive_notify', message.notifyMsg);
