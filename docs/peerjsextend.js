@@ -85,7 +85,7 @@ function peerInstanceExtend(peer) {
     peer.branchSrcConnection = null;
     peer.branchConnections = {};
 
-    peer.socket.on('message', message => {
+    peer.socket.on('message', function(message) {
         var type = message.type;
         switch (type) {
             case 'PING':
