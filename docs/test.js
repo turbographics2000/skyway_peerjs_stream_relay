@@ -13,8 +13,8 @@ btnRootStart.onclick = evt => {
 }
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
-    peer.rootId = 'root';
     peerSetup();
+    peer.rootId = 'root';
 }
 
 function peerSetup() {
