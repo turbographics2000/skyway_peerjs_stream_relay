@@ -3,6 +3,7 @@ var debugLevel = 2;
 var myId = null;
 var stream = null;
 var peer = null;
+var maxBranchCnt = 5;
 
 PeerClassExtend();
 
