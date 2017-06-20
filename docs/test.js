@@ -92,16 +92,16 @@ function webCamSetup(elm) {
     return navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
-    }).then(stream => {
-        elm.srcObject = stream;
-        return stream;
+    }).then(strm => {
+        elm.srcObject = strm;
+        return strm;
     }).catch(ex => console.log('getUserMedia error.', ex));
 }
 
 function callSetup(call) {
-    call.on('stream', stream => {
+    call.on('stream', strm => {
         console.log('call on "stream"');
-        remoteView.srcObject = stream;
+        remoteView.srcObject = stream = strm;
         Object.keys(peer.branchData.children).forEach(branchId => {
             peer.branchConnections[branchId] = peer.call(branchId, stream);
         });
