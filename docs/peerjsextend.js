@@ -25,10 +25,7 @@ function PeerClassExtend() {
 
     Peer.prototype.responseBranchData = function (branchData, dstId) {
         console.log('notifyBranchData', 'send_notify');
-        this.sendNotify({
-            orgType: 'branch_data',
-            branchData
-        }, dstId);
+        this.sendNotify(Object.assign({orgType: 'branchData'}, branchData), dstId);
     };
 
     Peer.prototype.sendNotify = function (notifyMsg, dstId) {
