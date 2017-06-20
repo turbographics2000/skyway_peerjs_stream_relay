@@ -26,7 +26,7 @@ function peerSetup() {
         if (id === 'root') {
             webCamSetup(selfView).then(_ => { });
         } else {
-            notifyJoin();
+            peer.notifyJoin();
         }
         myIdDisp.textContent = id;
     });
