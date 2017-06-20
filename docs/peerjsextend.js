@@ -92,7 +92,7 @@ function peerInstanceExtend(peer) {
                 if (message.notifyMsg) {
                     addLogMsg(message.notifyMsg.orgType, 'receive_notify');
                     console.log('receive_notify', message.notifyMsg);
-                    this.emit(message.orgMsg.orgType, message.orgMsg);
+                    this.emit(message.notifyMsg.orgType, message.notifyMsg);
                 }
                 break;
         }
