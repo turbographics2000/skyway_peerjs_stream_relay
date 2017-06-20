@@ -9,13 +9,14 @@ PeerClassExtend();
 
 btnRootStart.onclick = evt => {
     peer = new Peer('root', { key: apiKey, debug: 3 });
+    peerInstanceExtend(peer);
 }
 btnStart.style.display = '';
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
+    peerInstanceExtend(peer);
 }
 
-peerInstanceExtend(peer);
 
 peer.on('open', id => {
     console.log('peer on "open"');
