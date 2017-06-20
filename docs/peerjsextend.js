@@ -43,7 +43,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.initBranch = function (remoteId) {
-        var branchData = this.createBranchData(remoteId, { id: 'root' }, 0);
+        var branchData = this.createBranchData(remoteId, 'root', 0);
         this.levelBranches.push({
             [remoteId]: branchData
         });
