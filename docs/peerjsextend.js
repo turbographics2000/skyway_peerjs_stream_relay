@@ -69,7 +69,7 @@ function PeerClassExtend() {
         for (var i = 0, il = branchIds.length; i < il; i++) {
             var branchId = branchIds[i];
             if (Object.keys(branches[branchId].children).length < maxBranchCnt) {
-                this.createBranchData(remoteId, branches[branchId], level + 1);
+                var branchData = this.createBranchData(remoteId, branches[branchId], level + 1);
                 this.dicBranches[remoteId] = branches[branchId].children[remoteId] = branchData;
                 this.levelBranches[level + 1] = this.levelBranches[level + 1] || {};
                 this.levelBranches[level + 1][remoteId] = branchData;
