@@ -42,9 +42,9 @@ function peerSetup() {
         var branchData;
         // 視聴者(ブランチ)配置する
         if (peer.levelBranches[0] === undefined) {
-            branchData = initBranch(joinId);
+            branchData = peer.initBranch(joinId);
         } else {
-            branchData = addBranch(joinId);
+            branchData = peer.addBranch(joinId);
         }
         // 配置結果を視聴者に知らせる
         peer.notifyBranchData(branchData);
