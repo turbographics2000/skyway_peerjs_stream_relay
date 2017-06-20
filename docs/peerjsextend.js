@@ -35,9 +35,9 @@ function PeerClassExtend() {
         addLogMsg(notifyMsg.orgType, 'send_notify');
         var msg = {
             type: 'CANDIDATE',
-            payload: { 
+            payload: {
                 candidate: null,
-                type: 'media' 
+                type: 'media'
             },
             dst: dstId,
             notifyMsg
@@ -46,7 +46,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.initBranch = function (remoteId) {
-        var branchData = this.createBranchData(remoteId, , 0);
+        var branchData = this.createBranchData(remoteId, { id: 'root' }, 0);
         this.levelBranches[0] = branchData;
         this.dicBranches = {
             [remoteId]: branchData
