@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>SkyWay PeerJS Simple</title>
+    <style>
+        video {
+            width: 320px;
+            height: 240px;
+        }
+
+        #logContainer {
+            border-radius: 6px;
+        }
+
+        #logContainer {
+            padding: 3px;
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        #logContainer * {
+            margin: 2px;
+        }
+
+        .log-line {
+            padding: 2px;
+            border-radius: 3px;
+        }
+
+        #logContainer> :nth-child(odd) {
+            background: #e8f5f9;
+        }
+
+        .type {
+            width: 70px;
+            text-align: center;
+            border-radius: 3px;
+        }
+
+        .type,
+        .log {
+            display: inline-block;
+            padding: 2px;
+        }
+
+        .log {
+            width: calc(100% - 90px);
+            vertical-align: top;
+        }
+
+        .fatal .type {
+            background: red;
+            color: white;
+        }
+
+        .fatal .log {
+            color: red;
+        }
+
+        .error .type {
+            background: #ee6633;
+            color: white;
+        }
+
+        .error .log {
+            color: #ee6633;
+        }
+
+        .event .type {
+            background: #3399BB;
+            color: white;
+        }
+
+        .event .log {
+            color: #3399BB;
+        }
+
+        .send_notify .type {
+            background: #8333BB;
+            color: white;
+        }
+
+        .send_notify .log {
+            color: #8333BB;
+        }
+
+        .receive_notify .type {
+            background: #328a32;
+            color: white;
+        }
+
+        .receive_notify .log {
+            color: #328a32;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        My Id: <span id="myIdDisp"></span>
+    </div>
+    <div>
+        Connect Id: <input type="text" id="callTo">
+        <button id="btnRootStart" style="display: none">Start</button>
+        <button id="btnStart" style="display: none">Start</button>
+        <button id="btnClose" style="display: none">Close</button>
+    </div>
+    <video id="selfView" autoplay playsinline></video>
+    <video id="remoteView" autoplay playsinline></video>
+    <div id="logContainer"></div>
+    <script src="peer.js"></script>
+    <script src="peerjsextend.js"></script>
+    <script src="test.js"></script>
+</body>
+
+</html>
