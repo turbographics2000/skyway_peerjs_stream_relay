@@ -130,13 +130,11 @@ function PeerClassExtend() {
         }, {});
         var boxWidth = 150,
             boxHeight = 40;
-        // var zoom = d3.zoom()
-        //     .scaleExtent([.1, 1])
-        //     .on('zoom', function () {
-        //         svg.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
-        //     })
-        //     // Offset so that first pan and zoom does not jump back to the origin
-        //     .translate([150, 200]);
+        var zoom = d3.zoom()
+            .scaleExtent([.1, 1])
+            .on('zoom', _ => {
+                svg.attr('transform', 'translate(' + d3.event.translate + ') scale(' + d3.event.scale + ')');
+            });
 
         var svg = d3.select('body').append('svg')
             .attr('width', 1000)
