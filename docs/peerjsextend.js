@@ -1,6 +1,6 @@
 function PeerClassExtend() {
     Peer.prototype.notifyJoin = function () {
-        console.log('notifyJoin', 'send_notify');
+        console.log('notifyJoin:' + this.rootId, 'send_notify');
         this.sendNotify({
             orgType: 'join',
             joinId: this.id
@@ -8,7 +8,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.notifyCloseBranch = function (closeId) {
-        console.log('notifyCloseBranch', 'send_notify');
+        console.log('notifyCloseBranch:' + this.rootId, 'send_notify');
         this.sendNotify({
             orgType: 'close_branch',
             closeBranch: closeId
@@ -16,7 +16,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.requestBranch = function (branchSrcId) {
-        console.log('requestBranch', 'send_notify');
+        console.log('requestBranch:' + branchSrcId, 'send_notify');
         this.sendNotify({
             orgType: 'request_branch',
             fromId: this.id
@@ -24,7 +24,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.responseBranchData = function (branchData, dstId) {
-        console.log('notifyBranchData', 'send_notify');
+        console.log('notifyBranchData:' + dstId, 'send_notify');
         this.sendNotify(Object.assign({ orgType: 'branch_data' }, branchData), dstId);
     };
 
@@ -38,7 +38,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.initBranch = function (remoteId) {
-        addLogMsg('initBranch', 'init_branch');
+        addLogMsg('initBranch:' + remoteId, 'init_branch');
         var branchData = this.createBranchData(remoteId, 'root', 0);
         this.levelBranches.push({
             [remoteId]: branchData
