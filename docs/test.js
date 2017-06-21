@@ -116,7 +116,7 @@ function callSetup(call) {
         console.log('call on "close"');
         if (myId === 'root') {
             migrateBranch(call.peer);
-        } else if (Object.keys(peer.ranchConections).includes(call.peer)) {
+        } else if (Object.keys(peer.branchConections).includes(call.peer)) {
             notifyCloseBranch(call.peer);
         }
     });
