@@ -181,10 +181,10 @@ function PeerClassExtend() {
             .attr('d', elbow);
 
         // Style nodes    
-        var node = svg.selectAll('g.person')
+        var node = svg.selectAll('g.branch')
             .data(nodes)
             .enter().append('g')
-            .attr('class', 'person')
+            .attr('class', 'branch')
             .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
 
         // Draw the rectangle person boxes
