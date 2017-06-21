@@ -67,6 +67,7 @@ function peerSetup() {
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
     peer.on('branch_data', data => {
         addLogMsg('branch_data', 'event');
+        console.log('branch_data', data);
         peer.branchData = data;
         if (peer.branchSrcConnection) {
             peer.branchSrcConnection.close();
