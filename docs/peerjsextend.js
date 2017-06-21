@@ -145,7 +145,7 @@ function PeerClassExtend() {
             .append('g')
             .attr('transform', 'translate(150,200)');
 
-        var tree = d3.layout.tree()
+        var tree = d3.tree()
             .nodeSize([100, 200])
             .separation(_ => .5)
             .children(branchData => person.children);
