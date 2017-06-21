@@ -88,7 +88,6 @@ function PeerClassExtend() {
             return;
         }
 
-        debugger;
         var lastLevelBranches = this.levelBranches[lastLevel];
         var lastLevelBranchIds = Object.keys(lastLevelBranches);
         var migrateData = lastLevelBranches[lastLevelBranchIds[0]];
