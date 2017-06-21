@@ -40,7 +40,7 @@ function peerSetup() {
 
     peer.on('call', call => {
         console.log('peer on "call"');
-        if(call.peer === branchData.branchSrcId) {
+        if(call.peer === peer.branchData.branchSrcId) {
             branchSrcConnection = call;
         } else {
             branchConections[call.peer] = call;
