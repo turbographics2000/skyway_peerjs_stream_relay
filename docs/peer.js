@@ -423,7 +423,14 @@ Negotiator.startConnection = function(connection, options) {
 
   if (connection.type === 'media' && options._stream) {
     // Add the stream.
-    pc.addStream(options._stream);
+    if('addTrack'in pc) {
+      options._stream.getTracks().forEach(track => {
+        connection.mediaTrackSenders = connection.mediaTrackSenders || {};
+        connection.mediaTrackSenders[track.kind] = pc.addTrack(track, options._stream);
+      });
+    } else {
+      pc.addStream(options._stream);
+    }
   }
 
   // What do we need to do now?

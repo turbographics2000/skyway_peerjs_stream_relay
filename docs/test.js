@@ -3,7 +3,8 @@ var debugLevel = 2;
 var myId = null;
 var stream = null;
 var peer = null;
-var maxBranchCnt = 5;
+var maxBranchCnt = 1;
+var trackSender = null;
 
 PeerClassExtend();
 
@@ -127,7 +128,11 @@ function callSetup(call) {
         remoteView.srcObject = stream = strm;
         peer.branchSrcConnection = call;
         Object.keys(peer.branchData.children).forEach(branchId => {
-            peer.branchConnections[branchId] = peer.call(branchId, stream);
+            if(peer.branchConnections[branchId]) {
+                peer.branchConnections[branchId].mediaTrackSenders.video.replaceTrack(stream.getVideoTrack());
+            } else {
+                peer.call(branchId, stream);
+            }
         });
     });
     call.on('close', _ => {
