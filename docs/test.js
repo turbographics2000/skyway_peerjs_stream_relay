@@ -85,11 +85,11 @@ function peerSetup() {
         addLogMsg('request_branch from:' + req.fromId, 'event');
         var call = peer.call(req.fromId, stream);
         peer.branchConnections[req.fromId] = call;
-        call.pc.addEventListener('iceconnectionstatechange', function () {
-            if (this.iceConnectionState === 'disconnected') {
-                console.log('disconnected');
-            }
-        });
+        // call.pc.addEventListener('iceconnectionstatechange', function () {
+        //     if (this.iceConnectionState === 'disconnected') {
+        //         console.log('disconnected');
+        //     }
+        // });
     });
 
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
