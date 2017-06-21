@@ -142,7 +142,7 @@ function callSetup(call) {
             peer.branchSrcConnection = null;
         } else if (peer.branchConnections[call.peer]) {
             delete peer.branchConnections[call.peer];
-            notifyCloseBranch(call.peer);
+            peer.notifyCloseBranch(call.peer);
         }
     });
 }
