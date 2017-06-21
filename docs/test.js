@@ -54,7 +54,7 @@ function peerSetup() {
     peer.on('join', joinData => {
         addLogMsg('join', 'event');
         var branchData;
-        // 視聴者(ブランチ)配置する
+        // 視聴者(ブランチ)を配置する
         if (peer.levelBranches[0] === undefined) {
             branchData = peer.initBranch(joinData.joinId);
         } else {
@@ -133,7 +133,6 @@ function callSetup(call) {
         });
     });
     call.on('close', _ => {
-        debugger;
         console.log('call on "close"');
         if (myId === 'root') {
             var migrateData = peer.migrateBranch.call(peer, call.peer);
