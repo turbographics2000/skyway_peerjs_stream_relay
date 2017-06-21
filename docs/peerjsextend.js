@@ -146,7 +146,7 @@ function PeerClassExtend() {
         var tree = d3.tree()
             .nodeSize([100, 200])
             .separation(_ => .5)
-            .children(branchData => person.children);
+            .children(branchData => branchData.children);
 
         var nodes = tree.nodes(data);
         var links = tree.links(nodes);
