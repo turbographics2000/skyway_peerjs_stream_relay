@@ -125,19 +125,11 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.drawTree = function () {
-        var boxWidth = 150,
-            boxHeight = 40;
-
-        var tree = d3.layout.tree()
-            .nodeSize([100, 200])
-            .separation(_ => .5)
-            .children(branchData => person.children);
-
-        //.size([height, width]);
         var data = this.levelBranches.reduce((a, b) => {
             return Object.assign(a, b);
         }, {});
-
+        var boxWidth = 150,
+            boxHeight = 40;
         var nodes = tree.nodes(data);
         var links = tree.links(nodes);
 
@@ -147,6 +139,14 @@ function PeerClassExtend() {
             .call(zoom)
             .append('g')
             .attr('transform', 'translate(150,200)');
+
+        var tree = d3.layout.tree()
+            .nodeSize([100, 200])
+            .separation(_ => .5)
+            .children(branchData => person.children);
+
+        //.size([height, width]);
+
 
         svg.selectAll('path.link')
             .data(links)
