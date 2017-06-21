@@ -162,7 +162,7 @@ function PeerClassExtend() {
             // Tell d3 what the child nodes are. Remember, we're drawing
             // a tree so the ancestors are child nodes.
             .children(function (person) {
-                return person._parents;
+                return person.children;
             });
 
 
@@ -203,7 +203,7 @@ function PeerClassExtend() {
             .attr('text-anchor', 'start')
             .attr('class', 'name')
             .text(function (d) {
-                return d.name;
+                return d.id;
             });
 
 
