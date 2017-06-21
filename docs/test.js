@@ -18,12 +18,8 @@ btnStart.onclick = evt => {
     peer.rootId = 'root';
 }
 
-function connectTest() {
-}
-
 function peerSetup() {
     peerInstanceExtend(peer);
-
 
     peer.on('open', id => {
         console.log('peer on "open"');
