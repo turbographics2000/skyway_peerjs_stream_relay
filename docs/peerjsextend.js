@@ -98,7 +98,7 @@ function PeerClassExtend() {
             oldBranchSrcData.children.splice(oldBranchSrcData.children.indexOf(migrateData.id), 1);
         }
         if (lastLevelBranchIds.length === 1) {
-            this.levelBranches[lastLevel].pop();
+            this.levelBranches.pop();
         }
 
         if (closeData.level > 0) {
