@@ -91,7 +91,7 @@ function PeerClassExtend() {
         debugger;
         var lastLevelBranches = this.levelBranches[lastLevel];
         var lastLevelBranchIds = Object.keys(lastLevelBranches);
-        var migrateData = lastLevelBranches(lastLevelBranchIds[0]);
+        var migrateData = lastLevelBranches[lastLevelBranchIds[0]];
         delete lastLevelBranches[lastLevelBranchIds[0]];
         if (migrateData.level > 0) {
             var oldBranchSrcData = this.levelBranches[migrateData.level - 1][migrateData.branchSrcId];
