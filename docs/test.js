@@ -120,7 +120,9 @@ function callSetup(call) {
     });
     call.on('close', _ => {
         console.log('call on "close"');
-        if (peer.branchSrcConnection.peer === call.peer) {
+        if(myId === 'root') {
+            peer.migrateBranch(call.peer);
+        } else if (peer.branchSrcConnection.peer === call.peer) {
             peer.branchSrcConnection = null;
         } else if (peer.branchConections[call.peer]) {
             delete peer.branchConections[call.peer];
