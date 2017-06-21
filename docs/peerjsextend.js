@@ -64,6 +64,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.addBranch = function (remoteId, level = 0) {
+        addLogMsg('addBranch:' + remoteId, 'add_branch');
         let branches = this.levelBranches[level];
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
@@ -83,6 +84,7 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.migrateBranch = function (closeId) {
+        addLogMsg('migrateBranch:' + closeId, 'migrate_branch');
         var lastLevel = this.levelBranches.length - 1;
         var closeData = this.dicBranches[closeId];
         if(closeData.level === lastLevel) return;
