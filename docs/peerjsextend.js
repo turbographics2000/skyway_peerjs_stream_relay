@@ -130,7 +130,7 @@ function PeerClassExtend() {
         }, {});
         var boxWidth = 150,
             boxHeight = 40;
-        var zoom = d3.behavior.zoom()
+        var zoom = d3.zoom()
             .scaleExtent([.1, 1])
             .on('zoom', function () {
                 svg.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
