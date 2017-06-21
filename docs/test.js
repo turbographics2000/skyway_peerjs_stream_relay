@@ -140,8 +140,8 @@ function callSetup(call) {
             peer.responseBranchData(migrateData, migrateData.id);
         } else if (peer.branchSrcConnection.peer === call.peer) {
             peer.branchSrcConnection = null;
-        } else if (peer.branchConections[call.peer]) {
-            delete peer.branchConections[call.peer];
+        } else if (peer.branchConnections[call.peer]) {
+            delete peer.branchConnections[call.peer];
             notifyCloseBranch(call.peer);
         }
     });
