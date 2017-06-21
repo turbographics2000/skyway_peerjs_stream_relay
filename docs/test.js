@@ -93,6 +93,7 @@ function peerSetup() {
             }
             return true;
         });
+        callSetup(call);
     });
 
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
