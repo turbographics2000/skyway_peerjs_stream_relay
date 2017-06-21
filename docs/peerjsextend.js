@@ -130,8 +130,6 @@ function PeerClassExtend() {
         }, {});
         var boxWidth = 150,
             boxHeight = 40;
-        var nodes = tree.nodes(data);
-        var links = tree.links(nodes);
 
         var svg = d3.select('body').append('svg')
             .attr('width', 1000)
@@ -145,7 +143,8 @@ function PeerClassExtend() {
             .separation(_ => .5)
             .children(branchData => person.children);
 
-        //.size([height, width]);
+        var nodes = tree.nodes(data);
+        var links = tree.links(nodes);
 
 
         svg.selectAll('path.link')
