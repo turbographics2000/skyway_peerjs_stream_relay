@@ -122,8 +122,6 @@ function webCamSetup(elm) {
     }).catch(ex => console.log('getUserMedia error.', ex));
 }
 
-
-
 function callSetup(call) {
     call.on('stream', strm => {
         console.log('call on "stream"');
