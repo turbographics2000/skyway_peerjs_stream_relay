@@ -14,7 +14,7 @@ btnRootStart.onclick = evt => {
 }
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
-    peerInstanceExtend(peer);
+    peerSetup();
     peer.rootId = 'root';
 }
 
