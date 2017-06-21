@@ -101,13 +101,13 @@ function peerSetup() {
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
     // 視聴をやめたブランチをブランチ元(ブランチソース)が放送主(ルート)に報告する。
     // その報告を受信したとき放送主(ルート)側で発生するイベント
-    peer.on('close_branch', closeId => {
+    peer.on('close_branch', closeBranchData => {
         console.log('peer on "close_branch"');
-        if (peer.closeNotifiyIgnoreIds[closeId]) {
-            delete peer.closeNotifiyIgnoreIds[closeId];
+        if (peer.closeNotifiyIgnoreIds[closeBranchData.id]) {
+            delete peer.closeNotifiyIgnoreIds[closeBranchData.id];
             return;
         }
-        peer.migrateBranch(closeId);
+        peer.migrateBranch(closeBranchData.id);
     });
 }
 

@@ -11,7 +11,7 @@ function PeerClassExtend() {
         console.log('notifyCloseBranch:' + this.rootId, 'send_notify');
         this.sendNotify({
             orgType: 'close_branch',
-            closeBranch: closeId
+            id: closeId
         }, this.rootId);
     };
 
