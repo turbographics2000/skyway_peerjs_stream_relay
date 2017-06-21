@@ -10,28 +10,20 @@ PeerClassExtend();
 btnRootStart.style.display = btnStart.style.display = '';
 btnRootStart.onclick = evt => {
     peer = new Peer('root', { key: apiKey, debug: 3 });
-    peerInstanceExtend(peer);
     peerSetup();
 }
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
     peerInstanceExtend(peer);
-    connectTest();
     peer.rootId = 'root';
 }
 
 function connectTest() {
-    var dc = peer.connect('root');
-    dc.on('open', function () {
-        console.log('dc open');
-        dc.close();
-        peerSetup();
-    });
 }
 
 function peerSetup() {
+    peerInstanceExtend(peer);
 
-    // まず初めにDataChannelで接続
 
     peer.on('open', id => {
         console.log('peer on "open"');
@@ -39,7 +31,13 @@ function peerSetup() {
         if (id === 'root') {
             webCamSetup(selfView).then(strm => stream = strm);
         } else {
-            peer.notifyJoin();
+            // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
+            var dc = peer.connect('root');
+            dc.on('open', function () {
+                console.log('dc open');
+                dc.close();
+                peer.notifyJoin();
+            });
         }
         myIdDisp.textContent = id;
     });
