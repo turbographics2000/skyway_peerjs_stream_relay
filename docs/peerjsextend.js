@@ -140,7 +140,7 @@ function PeerClassExtend() {
             });
             pElm.appendChild(ul);
         };
-        func(0, this.levelBranches[0][Object.keys(this.levelBranches[0])[0]], treeContainer);
+        func(0, Object.keys(this.levelBranches[0])[0], treeContainer);
     }
 }
 
