@@ -87,6 +87,9 @@ function PeerClassExtend() {
         console.log(closeId, closeData, this.dicBranches);
         if (closeData.level === lastLevel) {
             delete this.levelBranches[lastLevel][closeId];
+            var closeBranchSrcData = this.levelBranches[lastLevel - 1][closeData.branchSrcId];
+            closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
+            delete this.dicBranches[closeId];
             if (Object.keys(this.levelBranches[lastLevel]).length === 0) {
                 this.levelBranches.pop();
             }
