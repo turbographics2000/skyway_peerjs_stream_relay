@@ -5,6 +5,7 @@ var stream = null;
 var peer = null;
 var maxBranchCnt = 1;
 var trackSender = null;
+var branchData = null;
 
 PeerClassExtend();
 
@@ -68,7 +69,7 @@ function peerSetup() {
     peer.on('branch_data', data => {
         addLogMsg('branch_data', 'event');
         console.log('branch_data', data);
-        peer.branchData = data;
+        branchData = data;
         if (peer.branchSrcConnection) {
             peer.branchSrcConnection.close();
             peer.branchSrcConnection = null;
@@ -79,7 +80,7 @@ function peerSetup() {
         //         delete branchConnections[branchId];
         //     });
         // }
-        peer.requestBranch(peer.branchData.branchSrcId);
+        peer.requestBranch(branchData.branchSrcId);
     });
 
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
@@ -107,7 +108,7 @@ function peerSetup() {
             delete peer.closeNotifiyIgnoreIds[closeBranchData.id];
             return;
         }
-        peer.migrateBranch(closeBranchData.id);
+        peer.migrateBranch(closeBranchData.level, closeBranchData.id);
     });
 }
 
@@ -128,9 +129,12 @@ function callSetup(call) {
         console.log('call on "stream"');
         remoteView.srcObject = stream = strm;
         peer.branchSrcConnection = call;
-        Object.keys(peer.branchData.children).forEach(branchId => {
-            peer.branchConnections[branchId] = peer.call(branchId, stream);
-        });
+        if (branchData) {
+            Object.keys(branchData.children).forEach(branchId => {
+                peer.branchConnections[branchId] = peer.call(branchId, stream);
+            });
+            branchData = null;
+        }
     });
     call.on('close', _ => {
         console.log('call on "close"');

@@ -148,7 +148,6 @@ function peerInstanceExtend(peer) {
     peer.rootId = null;
     peer.levelBranches = [];
     peer.dicBranches = {};
-    peer.branchData = null;
     peer.branchSrcConnection = null;
     peer.branchConnections = {};
     peer.closeNotifiyIgnoreIds = {};
