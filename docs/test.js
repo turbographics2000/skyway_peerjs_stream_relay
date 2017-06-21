@@ -103,8 +103,8 @@ function peerSetup() {
     // その報告を受信したとき放送主(ルート)側で発生するイベント
     peer.on('close_branch', closeId => {
         console.log('peer on "close_branch"');
-        if (peer.closeNotifiyIgnoreIds[remoteId]) {
-            delete peer.closeNotifiyIgnoreIds[remoteId];
+        if (peer.closeNotifiyIgnoreIds[closeId]) {
+            delete peer.closeNotifiyIgnoreIds[closeId];
             return;
         }
         peer.migrateBranch(closeId);
