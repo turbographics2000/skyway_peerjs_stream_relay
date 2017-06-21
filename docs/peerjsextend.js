@@ -114,7 +114,7 @@ function PeerClassExtend() {
         delete this.dicBranches[closeId];
         this.dicBranches[migrateData.id] = closeData;
 
-        peer.closeNotifiyIgnoreIds[closeId] = true;
+        peer.closeNotifiyIgnoreIds[migrateData.id] = true;
 
         return closeData;
     };
