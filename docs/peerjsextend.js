@@ -84,6 +84,15 @@ function PeerClassExtend() {
         var lastLevel = this.levelBranches.length - 1;
         var closeData = this.dicBranches[closeId];
 
+        if (closeData.level === lastLevel) {
+            delete this.levelBranches[lastLevel][closeId];
+            if(Object.keys(this.levelBranches[lastLevel]).length === 0) {
+                this.levelBranches.pop();
+            }
+            addLogMsg('Nothing migrate branch', 'migrate_branch');
+            return;
+        }
+
         var lastLevelBranches = this.levelBranches[lastLevel];
         var lastLevelBranchIds = Object.keys(lastLevelBranches);
         var migrateData = lastLevelBranches[lastLevelBranchIds[0]];
@@ -94,11 +103,6 @@ function PeerClassExtend() {
         }
         if (lastLevelBranchIds.length === 1) {
             this.levelBranches.pop();
-        }
-
-        if (closeData.level === lastLevel) {
-            addLogMsg('Nothing migrate branch', 'migrate_branch');
-            return;
         }
 
         if (closeData.level > 0) {
