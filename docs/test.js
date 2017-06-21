@@ -85,9 +85,11 @@ function peerSetup() {
         addLogMsg('request_branch from:' + req.fromId, 'event');
         var call = peer.call(req.fromId, stream);
         peer.branchConnections[req.fromId] = call;
+        // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
         call.pc.addEventListener('iceconnectionstatechange', function () {
             if (this.iceConnectionState === 'disconnected') {
                 console.log('disconnected');
+                call.close();
             }
             return true;
         });
