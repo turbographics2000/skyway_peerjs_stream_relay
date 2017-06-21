@@ -139,7 +139,7 @@ function PeerClassExtend() {
         var svg = d3.select('body').append('svg')
             .attr('width', 1000)
             .attr('height', 500)
-            //.call(zoom)
+            .call(zoom)
             .append('g')
             .attr('transform', 'translate(150,200)');
 
