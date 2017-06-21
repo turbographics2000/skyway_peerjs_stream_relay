@@ -86,42 +86,104 @@ function PeerClassExtend() {
 
         if (closeData.level === lastLevel) {
             delete this.levelBranches[lastLevel][closeId];
-            if(Object.keys(this.levelBranches[lastLevel]).length === 0) {
+            if (Object.keys(this.levelBranches[lastLevel]).length === 0) {
                 this.levelBranches.pop();
             }
             addLogMsg('Nothing migrate branch', 'migrate_branch');
-            return;
+        } else {
+            var lastLevelBranches = this.levelBranches[lastLevel];
+            var lastLevelBranchIds = Object.keys(lastLevelBranches);
+            var migrateData = lastLevelBranches[lastLevelBranchIds[0]];
+            delete lastLevelBranches[lastLevelBranchIds[0]];
+            if (migrateData.level > 0) {
+                var oldBranchSrcData = this.levelBranches[migrateData.level - 1][migrateData.branchSrcId];
+                oldBranchSrcData.children.splice(oldBranchSrcData.children.indexOf(migrateData.id), 1);
+            }
+            if (lastLevelBranchIds.length === 1) {
+                this.levelBranches.pop();
+            }
+
+            if (closeData.level > 0) {
+                var closeBranchSrcData = this.levelBranches[closeData.level - 1][closeData.branchSrcId];
+                closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
+                closeBranchSrcData.children.push(migrateData.id);
+            }
+            closeData.children.forEach(childId => {
+                this.levelBranches[closeData.level + 1][childId].branchSrcId = migrateData.id;
+            });
+
+            closeData.id = migrateData.id;
+            delete this.dicBranches[closeId];
+            this.dicBranches[migrateData.id] = closeData;
+
+            peer.closeNotifiyIgnoreIds[migrateData.id] = true;
+
+            return closeData;
         }
 
-        var lastLevelBranches = this.levelBranches[lastLevel];
-        var lastLevelBranchIds = Object.keys(lastLevelBranches);
-        var migrateData = lastLevelBranches[lastLevelBranchIds[0]];
-        delete lastLevelBranches[lastLevelBranchIds[0]];
-        if (migrateData.level > 0) {
-            var oldBranchSrcData = this.levelBranches[migrateData.level - 1][migrateData.branchSrcId];
-            oldBranchSrcData.children.splice(oldBranchSrcData.children.indexOf(migrateData.id), 1);
-        }
-        if (lastLevelBranchIds.length === 1) {
-            this.levelBranches.pop();
-        }
-
-        if (closeData.level > 0) {
-            var closeBranchSrcData = this.levelBranches[closeData.level - 1][closeData.branchSrcId];
-            closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
-            closeBranchSrcData.children.push(migrateData.id);
-        }
-        closeData.children.forEach(childId => {
-            this.levelBranches[closeData.level + 1][childId].branchSrcId = migrateData.id;
-        });
-
-        closeData.id = migrateData.id;
-        delete this.dicBranches[closeId];
-        this.dicBranches[migrateData.id] = closeData;
-
-        peer.closeNotifiyIgnoreIds[migrateData.id] = true;
-
-        return closeData;
+        this.drawTree();
     };
+
+    Peer.prototype.drawTree = function () {
+        var boxWidth = 150,
+            boxHeight = 40;
+
+        var tree = d3.layout.tree()
+            .nodeSize([100, 200])
+            .separation(_ => .5)
+            .children(branchData => person.children);
+
+        //.size([height, width]);
+        var data = this.levelBranches.reduce((a, b) => {
+            return Object.assign(a, b);
+        }, {});
+
+        var nodes = tree.nodes(data);
+        var links = tree.links(nodes);
+
+        var svg = d3.select('body').append('svg')
+            .attr('width', 1000)
+            .attr('height', 500)
+            .call(zoom)
+            .append('g')
+            .attr('transform', 'translate(150,200)');
+
+        svg.selectAll('path.link')
+            .data(links)
+            .enter()
+            .append('path')
+            .attr('class', 'link')
+            .attr('d', elbow);
+
+        var node = svg.selectAll('g.branch')
+            .data(nodes)
+            .enter()
+            .append('g')
+            .attr('class', 'branch')
+            .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
+
+        node.append('rect')
+            .attr({
+                x: -(boxWidth / 2),
+                y: -(boxHeight / 2),
+                width: boxWidth,
+                height: boxHeight
+            });
+
+        node.append('text')
+            .attr('dx', -(boxWidth / 2) + 10)
+            .attr('dy', 0)
+            .attr('text-anchor', 'start')
+            .attr('class', 'name')
+            .text(d => d.id);
+
+        function elbow(d) {
+            return 'M' + d.source.y + ',' + d.source.x
+                + 'H' + (d.source.y + (d.target.y - d.source.y) / 2)
+                + 'V' + d.target.x
+                + 'H' + d.target.y;
+        }
+    }
 }
 
 function peerInstanceExtend(peer) {
