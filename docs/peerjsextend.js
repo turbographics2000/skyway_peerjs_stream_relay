@@ -134,8 +134,9 @@ function PeerClassExtend() {
                 var div = document.createElement('div');
                 div.textContent = childId;
                 li.appendChild(div);
-                func(level + 1, id, li);
-
+                if (level < this.levelBranches.length - 1) {
+                    func(level + 1, id, li);
+                }
             });
             pElm.appendChild(ul);
         };
