@@ -128,11 +128,7 @@ function callSetup(call) {
         remoteView.srcObject = stream = strm;
         peer.branchSrcConnection = call;
         Object.keys(peer.branchData.children).forEach(branchId => {
-            if(peer.branchConnections[branchId]) {
-                peer.branchConnections[branchId].mediaTrackSenders.video.replaceTrack(stream.getVideoTrack());
-            } else {
-                peer.call(branchId, stream);
-            }
+            peer.branchConnections[branchId] = peer.call(branchId, stream);
         });
     });
     call.on('close', _ => {
