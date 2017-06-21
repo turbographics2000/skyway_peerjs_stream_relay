@@ -77,7 +77,7 @@ function peerSetup() {
 
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_branch', req => {
-        addLogMsg('request_branch', 'event');
+        addLogMsg('request_branch from:' + req.fromId, 'event');
         peer.branchConnections[req.fromId] = peer.call(req.fromId, stream);
     });
 
