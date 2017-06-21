@@ -83,10 +83,6 @@ function PeerClassExtend() {
         addLogMsg('migrateBranch:' + closeId, 'migrate_branch');
         var lastLevel = this.levelBranches.length - 1;
         var closeData = this.dicBranches[closeId];
-        if (closeData.level === lastLevel) {
-            addLogMsg('Nothing migrate branch', 'migrate_branch');
-            return;
-        }
 
         var lastLevelBranches = this.levelBranches[lastLevel];
         var lastLevelBranchIds = Object.keys(lastLevelBranches);
@@ -98,6 +94,11 @@ function PeerClassExtend() {
         }
         if (lastLevelBranchIds.length === 1) {
             this.levelBranches.pop();
+        }
+
+        if (closeData.level === lastLevel) {
+            addLogMsg('Nothing migrate branch', 'migrate_branch');
+            return;
         }
 
         if (closeData.level > 0) {
