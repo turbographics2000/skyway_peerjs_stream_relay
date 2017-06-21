@@ -40,6 +40,11 @@ function peerSetup() {
 
     peer.on('call', call => {
         console.log('peer on "call"');
+        if(call.peer === branchData.branchSrcId) {
+            branchSrcConnection = call;
+        } else {
+            branchConections[call.peer] = call;
+        }
         call.answer(null);
         callSetup(call);
     });
@@ -108,15 +113,17 @@ function callSetup(call) {
     call.on('stream', strm => {
         console.log('call on "stream"');
         remoteView.srcObject = stream = strm;
+        peer.branchSrcConnection = call;
         Object.keys(peer.branchData.children).forEach(branchId => {
             peer.branchConnections[branchId] = peer.call(branchId, stream);
         });
     });
     call.on('close', _ => {
         console.log('call on "close"');
-        if (myId === 'root') {
-            migrateBranch(call.peer);
-        } else if (Object.keys(peer.branchConections).includes(call.peer)) {
+        if (peer.branchSrcConnection.peer === call.peer) {
+            peer.branchSrcConnection = null;
+        } else if (peer.branchConections[call.peer]) {
+            delete peer.branchConections[call.peer];
             notifyCloseBranch(call.peer);
         }
     });
