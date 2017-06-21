@@ -23,6 +23,7 @@ btnStart.onclick = evt => {
 function connectTest() {
     var dc = peer.connect('root');
     dc.on('open', function () {
+        console.log('dc open');
         dc.close();
         peerSetup();
     });
