@@ -40,7 +40,7 @@ function peerSetup() {
 
     peer.on('call', call => {
         console.log('peer on "call"');
-        if(call.peer === peer.branchData.branchSrcId) {
+        if (call.peer === peer.branchData.branchSrcId) {
             branchSrcConnection = call;
         } else {
             branchConections[call.peer] = call;
@@ -83,7 +83,13 @@ function peerSetup() {
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_branch', req => {
         addLogMsg('request_branch from:' + req.fromId, 'event');
-        peer.branchConnections[req.fromId] = peer.call(req.fromId, stream);
+        var call = peer.call(req.fromId, stream);
+        peer.branchConnections[req.fromId] = call;
+        call.pc.addEventListener('iceconnectionstatechange', function () {
+            if (this.iceConnectionState === 'disconnected') {
+                console.log('disconnected');
+            }
+        });
     });
 
     // 視聴者(ブランチ)が視聴をやめたとき(close)、
@@ -109,6 +115,8 @@ function webCamSetup(elm) {
     }).catch(ex => console.log('getUserMedia error.', ex));
 }
 
+
+
 function callSetup(call) {
     call.on('stream', strm => {
         console.log('call on "stream"');
@@ -120,7 +128,7 @@ function callSetup(call) {
     });
     call.on('close', _ => {
         console.log('call on "close"');
-        if(myId === 'root') {
+        if (myId === 'root') {
             peer.migrateBranch(call.peer);
         } else if (peer.branchSrcConnection.peer === call.peer) {
             peer.branchSrcConnection = null;
