@@ -229,7 +229,7 @@ function peerInstanceExtend(peer, isRoot, maxBranchCnt) {
 
     console.log('peer on "open"');
     if (isRoot) {
-        peer.rootId = id;
+        peer.rootId = peer.id;
     }
     if (id === peer.rootId) {
         webCamSetup(selfView).then(stream => peer.stream = stream);
