@@ -13,7 +13,7 @@ peer.js必須。peer.jsとpeerjsextend.jsをロードする。
 <script src="peerjsextend.js"></script>
 ```
 
-放送主(ルート)のIDが取得できるようになった後に、以下のようにPeerインスタンスを生成し、'open'イベントで、以下のようにpeerInstanceExtend()を呼ぶ。
+放送主(ルート)のIDが取得できるようになった後に、以下のようにPeerインスタンスを生成し、Peerインスタンスの'open'イベントで、以下のようにpeerInstanceExtend()を呼ぶ。
 peerInstanceExtend()の引数で放送主(ルート)のユーザーIDと、分配数を設定する。
 (ライブラリを拡張するという実装方法をとっているため)
 ```js
