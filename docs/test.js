@@ -13,9 +13,9 @@ btnStart.onclick = evt => {
 }
 
 function peerSetup(isRoot) {
-    peerInstanceExtend(peer, 'root', 2);
     peer.on('open', id => {
         myIdDisp.textContent = myId = id;
+        peerInstanceExtend(peer, 'root', 2);
     });
 }
 
