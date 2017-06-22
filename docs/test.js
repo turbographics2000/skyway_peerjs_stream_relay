@@ -189,15 +189,9 @@ function drawTree() {
         if (peer.levelBranches[level][id].children.length) {
             var cul = document.createElement('ul');
             peer.levelBranches[level][id].children.forEach(childId => {
-                var cli = document.createElement('li');
-                cul.appendChild(cli);
-                var cdiv = document.createElement('div');
-                cdiv.textContent = childId;
-                cli.appendChild(cdiv);
                 if (level < peer.levelBranches.length - 1) {
                     func(level + 1, childId, li);
                 }
-                li.appendChild(cul);
             });
         }
         ul.appendChild(li);
