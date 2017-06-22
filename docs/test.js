@@ -167,3 +167,38 @@ function addLogMsg(str, type) {
     logContainer.appendChild(logLine);
     logLine.scrollIntoView();
 }
+
+
+function updateTree() {
+    treeContainer.innerHTML = '';
+    if (peer.levelBranches.length > 0) {
+        drawTree();
+    }
+}
+
+function drawTree() {
+    var func = (level, id, pElm) => {
+        var ul = document.createElement('ul');
+        var li = document.createElement('li');
+        var div = document.createElement('div');
+        div.textContent = id;
+        li.appendChild(div);
+        if (peer.levelBranches[level][id].children.length) {
+            var cul = document.createElement('ul');
+            peer.levelBranches[level][id].children.forEach(childId => {
+                var cli = document.createElement('li');
+                cul.appendChild(cli);
+                var cdiv = document.createElement('div');
+                cdiv.textContent = childId;
+                cli.appendChild(cdiv);
+                if (level < peer.levelBranches.length - 1) {
+                    func(level + 1, id, li);
+                }
+                li.appendChild(cul);
+            });
+        }
+        ul.appendChild(li);
+        pElm.appendChild(ul);
+    };
+    func(0, Object.keys(peer.levelBranches[0])[0], treeContainer);
+}
