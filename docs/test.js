@@ -43,9 +43,9 @@ function peerSetup() {
     peer.on('call', call => {
         console.log('peer on "call"');
         if (call.peer === branchData.branchSrcId) {
-            branchSrcConnection = call;
+            peer.branchSrcConnection = call;
         } else {
-            branchConections[call.peer] = call;
+            peer.branchConections[call.peer] = call;
         }
         call.answer(null);
         callSetup(call);
@@ -130,7 +130,7 @@ function callSetup(call) {
         remoteView.srcObject = stream = strm;
         peer.branchSrcConnection = call;
         if (branchData) {
-            Object.keys(branchData.children).forEach(branchId => {
+            branchData.children.forEach(branchId => {
                 peer.branchConnections[branchId] = peer.call(branchId, stream);
             });
             branchData = null;
