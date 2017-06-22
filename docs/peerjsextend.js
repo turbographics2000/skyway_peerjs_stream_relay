@@ -230,8 +230,6 @@ function peerInstanceExtend(peer, isRoot, maxBranchCnt) {
     console.log('peer on "open"');
     if (isRoot) {
         peer.rootId = peer.id;
-    }
-    if (id === peer.rootId) {
         webCamSetup(selfView).then(stream => peer.stream = stream);
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
