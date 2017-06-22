@@ -60,7 +60,6 @@ function PeerClassExtend() {
     };
 
     Peer.prototype.addBranch = function (remoteId, level = 0) {
-        addLogMsg('addBranch:' + remoteId, 'add_branch');
         let branches = this.levelBranches[level];
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
@@ -73,6 +72,7 @@ function PeerClassExtend() {
                     this.levelBranches.push({});
                 }
                 this.levelBranches[level + 1][remoteId] = branchData;
+                addLogMsg('addBranch:' + remoteId, 'add_branch');
                 return branchData;
             }
         }
