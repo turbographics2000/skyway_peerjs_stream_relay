@@ -195,7 +195,7 @@ function drawTree() {
                 cdiv.textContent = childId;
                 cli.appendChild(cdiv);
                 if (level < peer.levelBranches.length - 1) {
-                    func(level + 1, id, li);
+                    func(level + 1, childId, li);
                 }
                 li.appendChild(cul);
             });
