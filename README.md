@@ -6,7 +6,7 @@
 * ニコ生で補助的に動画配信を行うことを目的に実装。
 なので、放送主(ルート)のIDがWebRTC側でのメッセージのやり取り無しで取得できるのが前提。
 
-## インストール
+## 導入方法
 peer.js必須。peer.jsとpeerjsextend.jsをロードする。
 ```html
 <script src="peer.min.js"></script>
