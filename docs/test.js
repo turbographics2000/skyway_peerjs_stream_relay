@@ -139,7 +139,9 @@ function callSetup(call) {
         if (myId === 'root') {
             debugger;
             var migrateData = peer.migrateBranch.call(peer, call.peer);
-            peer.responseBranchData(migrateData, migrateData.id);
+            if (migrateData) {
+                peer.responseBranchData(migrateData, migrateData.id);
+            }
         } else if (peer.branchSrcConnection.peer === call.peer) {
             peer.branchSrcConnection = null;
         } else if (peer.branchConnections[call.peer]) {
