@@ -256,7 +256,7 @@ function callSetup(call) {
     });
     call.on('close', _ => {
         console.log('call on "close"');
-        if (peer.isRoot) {
+        if (peer.rootId === peer.id) {
             var migrateData = peer.migrateBranch.call(peer, call.peer);
             updateTree();
             if (migrateData) {
