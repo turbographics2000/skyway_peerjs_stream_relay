@@ -76,7 +76,10 @@ function PeerClassExtend() {
                 return branchData;
             }
         }
-        this.addBranch(remoteId, level + 1);
+        var ret = this.addBranch(remoteId, level + 1);
+        if(ret) {
+            return ret;
+        }
     };
 
     Peer.prototype.migrateBranch = function (closeId) {
