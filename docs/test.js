@@ -61,6 +61,7 @@ function peerSetup() {
         } else {
             branchData = peer.addBranch(joinData.joinId);
         }
+        updateTree();
         // 配置結果を視聴者(ブランチ)に知らせる
         peer.responseBranchData(branchData, joinData.joinId);
     });
@@ -109,6 +110,7 @@ function peerSetup() {
             return;
         }
         peer.migrateBranch(closeBranchData.id);
+        updateTree();
     });
 }
 
@@ -139,6 +141,7 @@ function callSetup(call) {
         if (myId === 'root') {
             debugger;
             var migrateData = peer.migrateBranch.call(peer, call.peer);
+            updateTree();
             if (migrateData) {
                 peer.responseBranchData(migrateData, migrateData.id);
             }

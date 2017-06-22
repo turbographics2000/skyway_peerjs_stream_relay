@@ -126,39 +126,8 @@ function PeerClassExtend() {
 
             return closeData;
         }
-
-        treeContainer.innerHTML = '';
-        if (this.levelBranches.length > 0) {
-            this.drawTree();
-        }
     };
 
-    Peer.prototype.drawTree = function () {
-        var func = (level, id, pElm) => {
-            var ul = document.createElement('ul');
-            var li = document.createElement('li');
-            var div = document.createElement('div');
-            div.textContent = id;
-            li.appendChild(div);
-            if (this.levelBranches[level][id].children.length) {
-                var cul = document.createElement('ul');
-                this.levelBranches[level][id].children.forEach(childId => {
-                    var cli = document.createElement('li');
-                    cul.appendChild(cli);
-                    var cdiv = document.createElement('div');
-                    cdiv.textContent = childId;
-                    cli.appendChild(cdiv);
-                    if (level < this.levelBranches.length - 1) {
-                        func(level + 1, id, li);
-                    }
-                    li.appendChild(cul);
-                });
-            }
-            ul.appendChild(li);
-            pElm.appendChild(ul);
-        };
-        func(0, Object.keys(this.levelBranches[0])[0], treeContainer);
-    }
 }
 
 function peerInstanceExtend(peer) {
