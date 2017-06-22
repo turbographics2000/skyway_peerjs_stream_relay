@@ -127,13 +127,13 @@ function PeerClassExtend() {
             return closeData;
         }
 
+        treeContainer.innerHTML = '';
         if (this.levelBranches.length > 0) {
             this.drawTree();
         }
     };
 
     Peer.prototype.drawTree = function () {
-        treeContainer.innerHTML = '';
         var func = (level, id, pElm) => {
             var ul = document.createElement('ul');
             var li = document.createElement('li');
