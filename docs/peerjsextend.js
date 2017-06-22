@@ -52,6 +52,7 @@
 
     Peer.prototype.createBranchData = function (id, branchSrcId, level) {
         return {
+            rootId: this.rootId,
             id,
             branchSrcId,
             level,
@@ -189,6 +190,7 @@ function peerInstanceExtend(peer, isRoot, maxBranchCnt) {
     peer.on('branch_data', data => {
         addLogMsg('branch_data', 'event');
         console.log('branch_data', data);
+        peer.rootId = data.rootId;
         peer.branchData = data;
         if (peer.branchSrcConnection) {
             peer.branchSrcConnection.close();
