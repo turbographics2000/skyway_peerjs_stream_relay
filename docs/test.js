@@ -105,7 +105,8 @@ function peerSetup() {
             delete peer.closeNotifiyIgnoreIds[closeBranchData.id];
             return;
         }
-        peer.migrateBranch(closeBranchData.id);
+        var migrateData = peer.migrateBranch(closeBranchData.id);
+        peer.responseBranchData(migrateData, migrateData.id);
         updateTree();
     });
 }
