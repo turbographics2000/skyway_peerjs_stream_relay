@@ -127,7 +127,9 @@ function PeerClassExtend() {
             return closeData;
         }
 
-        this.drawTree();
+        if (this.levelBranches.length > 0) {
+            this.drawTree();
+        }
     };
 
     Peer.prototype.drawTree = function () {
