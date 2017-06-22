@@ -132,16 +132,22 @@ function PeerClassExtend() {
         treeContainer.innerHTML = '';
         var func = (level, id, pElm) => {
             var ul = document.createElement('ul');
-            this.levelBranches[level][id].children.forEach(childId => {
-                var li = document.createElement('li');
-                ul.appendChild(li);
-                var div = document.createElement('div');
-                div.textContent = childId;
-                li.appendChild(div);
-                if (level < this.levelBranches.length - 1) {
-                    func(level + 1, id, li);
-                }
-            });
+            var li = document.createElement('li');
+            if (this.levelBranches[level][id].children.length) {
+                var cul = document.createElement('ul');
+                this.levelBranches[level][id].children.forEach(childId => {
+                    var cli = document.createElement('li');
+                    cul.appendChild(cli);
+                    var div = document.createElement('div');
+                    div.textContent = childId;
+                    cli.appendChild(div);
+                    if (level < this.levelBranches.length - 1) {
+                        func(level + 1, id, li);
+                    }
+                    li.appendChild(cul);
+                });
+            }
+            ul.appendChild(li);
             pElm.appendChild(ul);
         };
         func(0, Object.keys(this.levelBranches[0])[0], treeContainer);
