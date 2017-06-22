@@ -137,6 +137,7 @@ function callSetup(call) {
     call.on('close', _ => {
         console.log('call on "close"');
         if (myId === 'root') {
+            debugger;
             var migrateData = peer.migrateBranch.call(peer, call.peer);
             peer.responseBranchData(migrateData, migrateData.id);
         } else if (peer.branchSrcConnection.peer === call.peer) {
