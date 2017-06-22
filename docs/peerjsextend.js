@@ -124,6 +124,8 @@ function PeerClassExtend() {
             closeData.id = migrateData.id;
             delete this.dicBranches[closeId];
             this.dicBranches[migrateData.id] = closeData;
+            delete this.levelBranches[closeData.level][closeData.id];
+            this.levelBranches[closeData.level][migrateData.id] = closeData;
 
             peer.closeNotifiyIgnoreIds[migrateData.id] = true;
 
