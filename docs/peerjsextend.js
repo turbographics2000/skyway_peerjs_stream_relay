@@ -87,11 +87,13 @@ function PeerClassExtend() {
         console.log(closeId, closeData, this.dicBranches);
         if (closeData.level === lastLevel) {
             delete this.levelBranches[lastLevel][closeId];
-            var closeBranchSrcData = this.levelBranches[lastLevel - 1][closeData.branchSrcId];
-            closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
-            delete this.dicBranches[closeId];
             if (Object.keys(this.levelBranches[lastLevel]).length === 0) {
                 this.levelBranches.pop();
+            }
+            delete this.dicBranches[closeId];
+            if (closeData.branchSrcId !== 'root') {
+                var closeBranchSrcData = this.levelBranches[lastLevel - 1][closeData.branchSrcId];
+                closeBranchSrcData.children.splice(closeBranchSrcData.children.indexOf(closeId), 1);
             }
             addLogMsg('Nothing migrate branch', 'migrate_branch');
         } else {
@@ -133,7 +135,7 @@ function PeerClassExtend() {
         var func = (level, id, pElm) => {
             var ul = document.createElement('ul');
             var li = document.createElement('li');
-            var div =document.createElement('div');
+            var div = document.createElement('div');
             div.textContent = id;
             li.appendChild(div);
             if (this.levelBranches[level][id].children.length) {
