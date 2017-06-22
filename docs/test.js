@@ -3,7 +3,7 @@ var debugLevel = 2;
 var myId = null;
 var stream = null;
 var peer = null;
-var maxBranchCnt = 1;
+var maxBranchCnt = 2;
 var trackSender = null;
 var branchData = null;
 
