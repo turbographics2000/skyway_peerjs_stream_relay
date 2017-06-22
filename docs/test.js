@@ -1,113 +1,21 @@
 var apiKey = 'ce16d9aa-4119-4097-a8a5-3a5016c6a81c';
-var debugLevel = 2;
 var myId = null;
-var stream = null;
 var peer = null;
-var maxBranchCnt = 2;
-var trackSender = null;
-var branchData = null;
-
-PeerClassExtend();
 
 btnRootStart.style.display = btnStart.style.display = '';
 btnRootStart.onclick = evt => {
     peer = new Peer('root', { key: apiKey, debug: 3 });
-    peerSetup();
+    peerSetup(true);
 }
 btnStart.onclick = evt => {
     peer = new Peer({ key: apiKey, debug: 3 });
-    peerSetup();
-    peer.rootId = 'root';
+    peerSetup(false);
 }
 
-function peerSetup() {
-    peerInstanceExtend(peer);
-
+function peerSetup(isRoot) {
     peer.on('open', id => {
-        console.log('peer on "open"');
         myIdDisp.textContent = myId = id;
-        if (id === 'root') {
-            webCamSetup(selfView).then(strm => stream = strm);
-        } else {
-            // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
-            var dc = peer.connect('root');
-            dc.on('open', function () {
-                console.log('dc open');
-                dc.close();
-                peer.notifyJoin();
-            });
-        }
-        myIdDisp.textContent = id;
-    });
-
-    peer.on('call', call => {
-        console.log('peer on "call"');
-        peer.branchSrcConnection = call;
-        call.answer(null);
-        callSetup(call);
-    });
-
-    // 新規視聴者(ブランチ)が参加したとき、放送主側で発生するイベント
-    peer.on('join', joinData => {
-        addLogMsg('join', 'event');
-        var branchData;
-        // 視聴者(ブランチ)を配置する
-        if (peer.levelBranches[0] === undefined) {
-            branchData = peer.initBranch(joinData.joinId);
-        } else {
-            branchData = peer.addBranch(joinData.joinId);
-        }
-        updateTree();
-        // 配置結果を視聴者(ブランチ)に知らせる
-        peer.responseBranchData(branchData, joinData.joinId);
-    });
-
-    // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
-    peer.on('branch_data', data => {
-        addLogMsg('branch_data', 'event');
-        console.log('branch_data', data);
-        branchData = data;
-        if (peer.branchSrcConnection) {
-            peer.branchSrcConnection.close();
-            peer.branchSrcConnection = null;
-        }
-        // if (branchConnections) {
-        //     Object.keys(branchConnections).forEach(branchId => {
-        //         branchConnections[branchId].close();
-        //         delete branchConnections[branchId];
-        //     });
-        // }
-        peer.requestBranch(branchData.branchSrcId);
-    });
-
-    // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
-    peer.on('request_branch', req => {
-        addLogMsg('request_branch from:' + req.fromId, 'event');
-        var call = peer.call(req.fromId, stream);
-        peer.branchConnections[req.fromId] = call;
-        // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
-        call.pc.addEventListener('iceconnectionstatechange', function () {
-            if (this.iceConnectionState === 'disconnected') {
-                console.log('disconnected');
-                call.close();
-            }
-            return true;
-        });
-        callSetup(call);
-    });
-
-    // 視聴者(ブランチ)が視聴をやめたとき(close)、
-    // 視聴をやめたブランチをブランチ元(ブランチソース)が放送主(ルート)に報告する。
-    // その報告を受信したとき放送主(ルート)側で発生するイベント
-    peer.on('close_branch', closeBranchData => {
-        console.log('peer on "close_branch"');
-        if (peer.closeNotifiyIgnoreIds[closeBranchData.id]) {
-            delete peer.closeNotifiyIgnoreIds[closeBranchData.id];
-            return;
-        }
-        var migrateData = peer.migrateBranch(closeBranchData.id);
-        peer.responseBranchData(migrateData, migrateData.id);
-        updateTree();
+        peerInstanceExtend(peer, isRoot, 2);
     });
 }
 
@@ -121,78 +29,3 @@ function webCamSetup(elm) {
     }).catch(ex => console.log('getUserMedia error.', ex));
 }
 
-function callSetup(call) {
-    call.on('stream', strm => {
-        console.log('call on "stream"');
-        remoteView.srcObject = stream = strm;
-        peer.branchSrcConnection = call;
-        if (branchData) {
-            branchData.children.forEach(branchId => {
-                peer.branchConnections[branchId] = peer.call(branchId, stream);
-            });
-            branchData = null;
-        }
-    });
-    call.on('close', _ => {
-        console.log('call on "close"');
-        if (myId === 'root') {
-            debugger;
-            var migrateData = peer.migrateBranch.call(peer, call.peer);
-            updateTree();
-            if (migrateData) {
-                peer.responseBranchData(migrateData, migrateData.id);
-            }
-        } else if (peer.branchSrcConnection.peer === call.peer) {
-            peer.branchSrcConnection = null;
-        } else if (peer.branchConnections[call.peer]) {
-            delete peer.branchConnections[call.peer];
-            peer.notifyCloseBranch(call.peer);
-        }
-    });
-}
-
-
-function addLogMsg(str, type) {
-    const msgType = document.createElement('span');
-    msgType.classList.add('type');
-    msgType.textContent = type;
-    const msg = document.createElement('span');
-    msg.classList.add('log')
-    msg.textContent = str;
-    const logLine = document.createElement('div');
-    logLine.classList.add('log-line');
-    logLine.classList.add(type);
-    logLine.appendChild(msgType);
-    logLine.appendChild(msg);
-    logContainer.appendChild(logLine);
-    logLine.scrollIntoView();
-}
-
-
-function updateTree() {
-    treeContainer.innerHTML = '';
-    if (peer.levelBranches.length > 0) {
-        drawTree();
-    }
-}
-
-function drawTree() {
-    var func = (level, id, pElm) => {
-        var ul = document.createElement('ul');
-        var li = document.createElement('li');
-        var div = document.createElement('div');
-        div.textContent = id;
-        li.appendChild(div);
-        if (peer.levelBranches[level][id].children.length) {
-            var cul = document.createElement('ul');
-            peer.levelBranches[level][id].children.forEach(childId => {
-                if (level < peer.levelBranches.length - 1) {
-                    func(level + 1, childId, li);
-                }
-            });
-        }
-        ul.appendChild(li);
-        pElm.appendChild(ul);
-    };
-    func(0, Object.keys(peer.levelBranches[0])[0], treeContainer);
-}
