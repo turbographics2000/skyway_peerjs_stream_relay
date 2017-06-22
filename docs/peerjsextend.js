@@ -133,14 +133,17 @@ function PeerClassExtend() {
         var func = (level, id, pElm) => {
             var ul = document.createElement('ul');
             var li = document.createElement('li');
+            var div =document.createElement('div');
+            div.textContent = id;
+            li.appendChild(div);
             if (this.levelBranches[level][id].children.length) {
                 var cul = document.createElement('ul');
                 this.levelBranches[level][id].children.forEach(childId => {
                     var cli = document.createElement('li');
                     cul.appendChild(cli);
-                    var div = document.createElement('div');
-                    div.textContent = childId;
-                    cli.appendChild(div);
+                    var cdiv = document.createElement('div');
+                    cdiv.textContent = childId;
+                    cli.appendChild(cdiv);
                     if (level < this.levelBranches.length - 1) {
                         func(level + 1, id, li);
                     }
