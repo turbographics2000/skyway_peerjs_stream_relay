@@ -65,7 +65,7 @@
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
             var branchId = branchIds[i];
-            if (branches[branchId].children.length < maxBranchCnt) {
+            if (branches[branchId].children.length < this.maxBranchCnt) {
                 var branchData = this.createBranchData(remoteId, branchId, level + 1);
                 branches[branchId].children.push(remoteId);
                 this.dicBranches[remoteId] = branchData;
