@@ -187,7 +187,7 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
 
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
     peer.on('branch_data', data => {
-        if(notifyJoinSIId !== null) {
+        if (notifyJoinSIId !== null) {
             clearInterval(notifyJoinSIId);
             notifyJoinSIId = null;
         }
@@ -246,12 +246,10 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
     }
 }
 
-var notifyJoinSIId = null;
+var notifyJoinTOId = null;
 function notifyJoinPolling() {
     peer.notifyJoin();
-    notifyJoinSIId = setInterval(_ => {
-        peer.notifyJoin();
-    }, 3000);
+    notifyJoinTOId = setTimeout(notifyJoinPolling, 3000);
 }
 
 function callSetup(call) {
