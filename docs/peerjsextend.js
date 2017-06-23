@@ -16,10 +16,10 @@
         }, this.rootId);
     };
 
-    Peer.prototype.requestBranch = function (branchSrcId) {
-        console.log('requestBranch:' + branchSrcId, 'send_notify');
+    Peer.prototype.requestStream = function (branchSrcId) {
+        console.log('requestStream:' + branchSrcId, 'send_notify');
         this.sendNotify({
-            extType: 'request_branch',
+            extType: 'request_stream',
             fromId: this.id
         }, branchSrcId);
     };
@@ -187,6 +187,10 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
 
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
     peer.on('branch_data', data => {
+        if(notifyJoinSIId !== null) {
+            clearInterval(notifyJoinSIId);
+            notifyJoinSIId = null;
+        }
         addLogMsg('branch_data', 'event');
         console.log('branch_data', data);
         peer.rootId = data.rootId;
@@ -195,12 +199,12 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
             peer.branchSrcConnection.close();
             peer.branchSrcConnection = null;
         }
-        peer.requestBranch(peer.branchData.branchSrcId);
+        peer.requestStream(peer.branchData.branchSrcId);
     });
 
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
-    peer.on('request_branch', req => {
-        addLogMsg('request_branch from:' + req.fromId, 'event');
+    peer.on('request_stream', req => {
+        addLogMsg('request_stream from:' + req.fromId, 'event');
         var call = peer.call(req.fromId, peer.stream);
         peer.branchConnections[req.fromId] = call;
         // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
@@ -237,9 +241,16 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
         dc.on('open', function () {
             console.log('dc open');
             dc.close();
-            peer.notifyJoin();
+            notifyJoinPolling();
         });
     }
+}
+
+var notifyJoinSIId = null;
+function notifyJoinPolling() {
+    notifyJoinSIId = setInterval(_ => {
+        peer.notifyJoin();
+    }, 3000);
 }
 
 function callSetup(call) {
@@ -249,6 +260,10 @@ function callSetup(call) {
         peer.branchSrcConnection = call;
         if (peer.branchData) {
             peer.branchData.children.forEach(branchId => {
+                if (peer.branchConnections[branchId]) {
+                    peer.closeNotifiyIgnoreIds[branchId] = true;
+                    peer.branchConnections[branchId].close();
+                }
                 peer.branchConnections[branchId] = peer.call(branchId, peer.stream);
             });
             peer.branchData = null;
@@ -266,13 +281,17 @@ function callSetup(call) {
             peer.branchSrcConnection = null;
         } else if (peer.branchConnections[call.peer]) {
             delete peer.branchConnections[call.peer];
-            peer.notifyCloseBranch(call.peer);
+            if (peer.closeNotifiyIgnoreIds[call.peer]) {
+                delete peer.closeNotifiyIgnoreIds[call.peer];
+            } else {
+                peer.notifyCloseBranch(call.peer);
+            }
         }
     });
 }
 
 function addLogMsg(str, type) {
-    if(!logContainer) return;
+    if (!logContainer) return;
     const msgType = document.createElement('span');
     msgType.classList.add('type');
     msgType.textContent = type;
