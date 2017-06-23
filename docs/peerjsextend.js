@@ -248,6 +248,7 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
 
 var notifyJoinSIId = null;
 function notifyJoinPolling() {
+    peer.notifyJoin();
     notifyJoinSIId = setInterval(_ => {
         peer.notifyJoin();
     }, 3000);
