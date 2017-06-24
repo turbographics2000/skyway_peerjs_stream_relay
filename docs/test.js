@@ -38,6 +38,8 @@ function testPattern() {
         var cnv = document.createElement('canvas');
         cnv.width = 160;
         cnv.height = 120;
+        cnv.style.position = 'absolute';
+        cnv.style.top = '-10000px';
         var ctx = cnv.getContext('2d');
         var rafId = null;
         var img = document.createElement('img');
