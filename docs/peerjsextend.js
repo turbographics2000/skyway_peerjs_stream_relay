@@ -29,6 +29,12 @@
         this.sendNotify(Object.assign({ extType: 'branch_data' }, branchData), dstId);
     };
 
+    Peer.prototype.notifyEnd = function () {
+        this.levelBranches.forEach(levelBranch => {
+
+        });
+    }
+
     Peer.prototype.sendNotify = function (notifyMsg, dstId) {
         var msg = {
             type: 'CANDIDATE',
@@ -154,6 +160,9 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
     peer.socket.on('message', function (message) {
         var type = message.type;
         switch (type) {
+            case 'ID-TAKEN':
+                peer.emit('id_taken');
+                break;
             case 'CANDIDATE':
                 if (message.notifyMsg) {
                     addLogMsg(message.notifyMsg.extType, 'receive_notify');
@@ -258,11 +267,8 @@ function callSetup(call) {
         remoteView.srcObject = peer.stream = stream;
         peer.branchSrcConnection = call;
         if (peer.branchData) {
+            noNotifyCloseBranch();
             peer.branchData.children.forEach(branchId => {
-                if (peer.branchConnections[branchId]) {
-                    peer.closeNotifiyIgnoreIds[branchId] = true;
-                    peer.branchConnections[branchId].close();
-                }
                 peer.branchConnections[branchId] = peer.call(branchId, peer.stream);
             });
             peer.branchData = null;
@@ -278,6 +284,7 @@ function callSetup(call) {
             }
         } else if (peer.branchSrcConnection.peer === call.peer) {
             peer.branchSrcConnection = null;
+            noNotifyCloseBranch();
         } else if (peer.branchConnections[call.peer]) {
             delete peer.branchConnections[call.peer];
             if (peer.closeNotifiyIgnoreIds[call.peer]) {
@@ -285,6 +292,15 @@ function callSetup(call) {
             } else {
                 peer.notifyCloseBranch(call.peer);
             }
+        }
+    });
+}
+
+function noNotifyCloseBranch() {
+    peer.branchConnections.forEach(branchId => {
+        if (peer.branchConnections[branchId]) {
+            peer.closeNotifiyIgnoreIds[branchId] = true;
+            peer.branchConnections[branchId].close();
         }
     });
 }
