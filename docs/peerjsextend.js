@@ -228,7 +228,7 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     peer.on('request_stream', req => {
         addLogMsg('request_stream from:' + req.fromId, 'event');
         var call = peer.call(req.fromId, peer.stream);
-        peer.branchConnections[req.fromId] = call;
+        branchConnections[req.fromId] = call;
         // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
         call.pc.addEventListener('iceconnectionstatechange', function () {
             if (this.iceConnectionState === 'disconnected') {
