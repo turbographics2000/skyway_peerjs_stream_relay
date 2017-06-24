@@ -247,7 +247,9 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
             return;
         }
         var migrateData = peer.migrateBranch(closeBranchData.id);
-        peer.responseBranchData(migrateData, migrateData.id);
+        if (migrateData) {
+            peer.responseBranchData(migrateData, migrateData.id);
+        }
         updateTree();
     });
 
