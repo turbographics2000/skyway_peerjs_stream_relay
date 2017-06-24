@@ -345,7 +345,8 @@ function getTestPatternStream(displayTime) {
                 var now = new Date();
                 var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
                 if (displayTime) {
-                    ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+                    ctx.fillText(hms, cnv.width / 2, 20);
+                    ctx.strokeText(hms, cnv.width / 2, 20);
                 }
             };
             img.onload = _ => {
