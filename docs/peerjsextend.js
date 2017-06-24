@@ -227,13 +227,6 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
         var call = peer.call(req.fromId, peer.stream);
         peer.branchConnections[req.fromId] = call;
         // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
-        call.pc.addEventListener('iceconnectionstatechange', function () {
-            if (this.iceConnectionState === 'disconnected') {
-                console.log('disconnected');
-                call.close();
-            }
-            return true;
-        });
         callSetup(call);
     });
 
@@ -279,6 +272,14 @@ function notifyJoinPolling() {
 }
 
 function callSetup(call) {
+    call.pc.addEventListener('iceconnectionstatechange', function () {
+        if (this.iceConnectionState === 'disconnected') {
+            console.log('disconnected');
+            call.close();
+        }
+        return true;
+    });
+
     call.on('stream', stream => {
         console.log('call on "stream"');
         remoteView.srcObject = peer.stream = stream;
