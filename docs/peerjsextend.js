@@ -244,7 +244,6 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
         getStream(selfView, useTestPattern).then(stream => {
-            debugger;
             peer.stream = stream;
         });
     } else {
