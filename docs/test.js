@@ -8,20 +8,20 @@ btnRootStart.onclick = evt => {
     peerSetup(true);
 }
 btnStart.onclick = evt => {
-    peer = new Peer({ key: apiKey, debug: 3 });
     peerSetup(false);
 }
 
 function peerSetup(isRoot) {
+    peer = new Peer({ key: apiKey, debug: 3 });
+    peerInstanceExtend({
+        peer, 
+        rootId: 'root', 
+        branchCount: 2, 
+        getStream: 'testpattern_time',
+        previewElement: selfView
+    });
     peer.on('open', id => {
         myIdDisp.textContent = myId = id;
-        peerInstanceExtend({
-            peer, 
-            rootId: 'root', 
-            branchCount: 2, 
-            getStream: 'testpattern_time',
-            previewElement: selfView
-        });
     });
 }
 
