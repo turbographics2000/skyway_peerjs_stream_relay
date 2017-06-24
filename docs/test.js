@@ -41,7 +41,7 @@ function testPattern() {
         var ctx = cnv.getContext('2d');
         var rafId = null;
         var img = document.createElement('img');
-        var testPattern = img => {
+        var testPattern = _ => {
             rafId = requestAnimationFrame(testPattern);
             ctx.clearRect(0, 0, 160, 120);
             ctx.drawImage(img, 0, 0);
