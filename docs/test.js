@@ -8,11 +8,11 @@ btnRootStart.onclick = evt => {
     peerSetup(true);
 }
 btnStart.onclick = evt => {
+    peer = new Peer({ key: apiKey, debug: 3 });
     peerSetup(false);
 }
 
 function peerSetup(isRoot) {
-    peer = new Peer({ key: apiKey, debug: 3 });
     peerInstanceExtend({
         peer, 
         rootId: 'root', 
