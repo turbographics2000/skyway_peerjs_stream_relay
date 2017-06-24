@@ -44,7 +44,7 @@ function testPattern() {
         var testPattern = img => {
             rafId = requestAnimationFrame(testPattern);
             ctx.clearRect(0, 0, 160, 120);
-            ctx.drawImage(img);
+            ctx.drawImage(img, 0, 0);
             var now = new Date();
             var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
             ctx.textBaseline = 'middle';
