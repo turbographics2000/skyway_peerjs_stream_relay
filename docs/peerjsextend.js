@@ -145,21 +145,23 @@
 })();
 
 // Peerインスタンスを拡張
-function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream }) {
-    peer.rootId = rootId;
+function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewElement }) {
     peer.branchCount = branchCount;
     peer.branchData = null;
     peer.levelBranches = [];
     peer.dicBranches = {};
     peer.branchSrcConnection = null;
-    peer.branchConnections = {};
+    //peer.branchConnections = {};
+    let branchConnections = {};
     peer.closeNotifiyIgnoreIds = {};
-    peer.stream = null;
-    if(typeof getStream === 'function') {
+    //peer.stream = null;
+    let stream = null;
+    //peer.previewElement = previewElement;
+    if (typeof getStream === 'function') {
         peer.getStream = getStream;
-    } else if(getStream === 'testpattern') {
+    } else if (getStream === 'testpattern') {
         peer.getStream = getTestPatternStream.bind(null, false);
-    } else if(getStream === 'testpattern_time') {
+    } else if (getStream === 'testpattern_time') {
         peer.getStream = getTestPatternStream.bind(null, true);
     } else {
         peer.getStream = getWebCamStream;
@@ -251,9 +253,12 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream }) {
     });
 
     console.log('peer on "open"');
-    if (peer.rootId === peer.id) {
-        peer.getStream(selfView, useTestPattern).then(stream => {
-            peer.stream = stream;
+    if (rootId === peer.id) {
+        peer.getStream(selfView).then(strm => {
+            if (previewElement) {
+                previewElement.srcObject = strm;
+            }
+            stream = strm;
         }).catch(ex => console.log(ex));
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
@@ -287,7 +292,7 @@ function callSetup(call) {
     });
     call.on('close', _ => {
         console.log('call on "close"');
-        if (peer.rootId === peer.id) {
+        if (rootId === peer.id) {
             var migrateData = peer.migrateBranch.call(peer, call.peer);
             updateTree();
             if (migrateData) {
@@ -311,9 +316,6 @@ function getWebCamStream(elm, useTestPattern) {
     return navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
-    }).then(strm => {
-        elm.srcObject = strm;
-        return strm;
     });
 }
 
