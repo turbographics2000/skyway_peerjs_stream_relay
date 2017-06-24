@@ -40,6 +40,7 @@ function testPattern() {
         cnv.height = 120;
         cnv.style.position = 'absolute';
         cnv.style.top = '-10000px';
+        document.body.appendChild(cnv);
         var ctx = cnv.getContext('2d');
         var rafId = null;
         var img = document.createElement('img');
