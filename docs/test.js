@@ -52,7 +52,8 @@ function testPattern() {
             var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            ctx.font = 'monospace 10px';
+            ctx.font = 'monospace 30px';
+            ctx.fillStyle = 'white';
             ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
         };
         img.onload = _ => {

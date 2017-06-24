@@ -243,7 +243,10 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
 
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
-        getStream(selfView, useTestPattern).then(stream => peer.stream = stream);
+        getStream(selfView, useTestPattern).then(stream => {
+            debugger;
+            peer.stream = stream;
+        });
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
         var dc = peer.connect('root');
