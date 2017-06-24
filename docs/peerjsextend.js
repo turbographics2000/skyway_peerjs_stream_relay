@@ -287,6 +287,7 @@ function callSetup(call) {
             noNotifyCloseBranch();
             peer.branchData.children.forEach(branchId => {
                 peer.branchConnections[branchId] = peer.call(branchId, peer.stream);
+                callSetup(peer.branchConnections[branchId]);
             });
             peer.branchData = null;
         }
