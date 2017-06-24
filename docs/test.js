@@ -15,7 +15,12 @@ btnStart.onclick = evt => {
 function peerSetup(isRoot) {
     peer.on('open', id => {
         myIdDisp.textContent = myId = id;
-        peerInstanceExtend(peer, 'root', 2, true);
+        peerInstanceExtend({
+            peer, 
+            rootId: 'root', 
+            branchCount: 2, 
+            getStream: 'testpattern'
+        });
     });
 }
 

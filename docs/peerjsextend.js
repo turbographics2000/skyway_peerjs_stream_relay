@@ -71,7 +71,7 @@
         var branchIds = Object.keys(branches);
         for (var i = 0, il = branchIds.length; i < il; i++) {
             var branchId = branchIds[i];
-            if (branches[branchId].children.length < this.maxBranchCnt) {
+            if (branches[branchId].children.length < this.branchCount) {
                 var branchData = this.createBranchData(remoteId, branchId, level + 1);
                 branches[branchId].children.push(remoteId);
                 this.dicBranches[remoteId] = branchData;
@@ -145,9 +145,9 @@
 })();
 
 // Peerインスタンスを拡張
-function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
+function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream }) {
     peer.rootId = rootId;
-    peer.maxBranchCnt = maxBranchCnt;
+    peer.branchCount = branchCount;
     peer.branchData = null;
     peer.levelBranches = [];
     peer.dicBranches = {};
@@ -155,6 +155,15 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
     peer.branchConnections = {};
     peer.closeNotifiyIgnoreIds = {};
     peer.stream = null;
+    if(typeof getStream === 'function') {
+        peer.getStream = getStream;
+    } else if(getStream === 'testpattern') {
+        peer.getStream = getTestPatternStream.bind(null, false);
+    } else if(getStream === 'testpattern_time') {
+        peer.getStream = getTestPatternStream.bind(null, true);
+    } else {
+        peer.getStream = getWebCamStream;
+    }
 
     // 拡張メッセージハンドラーを設定
     peer.socket.on('message', function (message) {
@@ -243,9 +252,9 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
 
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
-        getStream(selfView, useTestPattern).then(stream => {
+        peer.getStream(selfView, useTestPattern).then(stream => {
             peer.stream = stream;
-        });
+        }).catch(ex => console.log(ex));
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
         var dc = peer.connect('root');
@@ -298,50 +307,48 @@ function callSetup(call) {
     });
 }
 
-function getStream(elm, useTestPattern) {
-    var p = null;
-    if (useTestPattern) {
-        p = testPattern();
-    } else {
-        p = navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: false
-        });
-    }
-    return p.then(strm => {
+function getWebCamStream(elm, useTestPattern) {
+    return navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+    }).then(strm => {
         elm.srcObject = strm;
         return strm;
-    }).catch(ex => console.log('getUserMedia error.', ex));
+    });
 }
 
-function testPattern() {
+function getTestPatternStream(displayTime) {
     return new Promise((resolve, reject) => {
-        var cnv = document.createElement('canvas');
-        cnv.width = 160;
-        cnv.height = 120;
-        cnv.style.position = 'absolute';
-        cnv.style.top = '-10000px';
-        document.body.appendChild(cnv);
-        var ctx = cnv.getContext('2d');
-        var rafId = null;
-        var img = document.createElement('img');
-        var testPattern = _ => {
-            rafId = requestAnimationFrame(testPattern);
-            ctx.clearRect(0, 0, 160, 120);
-            ctx.drawImage(img, 0, 0);
-            var now = new Date();
-            var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            ctx.font = '30px monospace';
-            ctx.fillStyle = 'white';
-            ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
-        };
-        img.onload = _ => {
-            testPattern(img);
-            resolve(cnv.captureStream(10));
+        try {
+            var cnv = document.createElement('canvas');
+            cnv.width = 160;
+            cnv.height = 120;
+            cnv.style.position = 'absolute';
+            cnv.style.top = '-10000px';
+            document.body.appendChild(cnv);
+            var ctx = cnv.getContext('2d');
+            var rafId = null;
+            var img = document.createElement('img');
+            var testPattern = _ => {
+                rafId = requestAnimationFrame(testPattern);
+                ctx.clearRect(0, 0, 160, 120);
+                ctx.drawImage(img, 0, 0);
+                var now = new Date();
+                var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                ctx.font = '30px monospace';
+                ctx.fillStyle = 'white';
+                ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+            };
+            img.onload = _ => {
+                testPattern(img);
+                resolve(cnv.captureStream(10));
+            }
+            img.src = 'SMPTE_Color_Bars_160x120.png';
+        } catch (ex) {
+            reject(ex);
         }
-        img.src = 'SMPTE_Color_Bars_160x120.png';
     });
 }
 
