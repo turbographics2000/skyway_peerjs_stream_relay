@@ -13,15 +13,15 @@ btnStart.onclick = evt => {
 }
 
 function peerSetup(isRoot) {
-    peerInstanceExtend({
-        peer, 
-        rootId: 'root', 
-        branchCount: 2, 
-        getStream: 'testpattern_time',
-        previewElement: selfView
-    });
     peer.on('open', id => {
         myIdDisp.textContent = myId = id;
+        peerInstanceExtend({
+            peer,
+            rootId: 'root',
+            branchCount: 2,
+            getStream: 'testpattern_time',
+            previewElement: selfView
+        });
     });
 }
 
