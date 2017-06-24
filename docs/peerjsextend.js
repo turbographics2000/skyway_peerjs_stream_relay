@@ -297,7 +297,7 @@ function callSetup(call) {
 }
 
 function noNotifyCloseBranch() {
-    peer.branchConnections.forEach(branchId => {
+    Object.keys(peer.branchConnections).forEach(branchId => {
         if (peer.branchConnections[branchId]) {
             peer.closeNotifiyIgnoreIds[branchId] = true;
             peer.branchConnections[branchId].close();
