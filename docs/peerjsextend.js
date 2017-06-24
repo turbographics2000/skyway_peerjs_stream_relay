@@ -246,23 +246,25 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
         updateTree();
     });
 
-    console.log('peer on "open"');
-    if (peer.rootId === peer.id) {
-        peer.getStream().then(stream => {
-            if (peer.previewElement) {
-                peer.previewElement.srcObject = stream;
-            }
-            peer.stream = stream;
-        }).catch(ex => console.log(ex));
-    } else {
-        // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
-        var dc = peer.connect('root');
-        dc.on('open', function () {
-            console.log('dc open');
-            dc.close();
-            notifyJoinPolling();
-        });
-    }
+    peer.on('open', _ => {
+        console.log('peer on "open"');
+        if (peer.rootId === peer.id) {
+            peer.getStream().then(stream => {
+                if (peer.previewElement) {
+                    peer.previewElement.srcObject = stream;
+                }
+                peer.stream = stream;
+            }).catch(ex => console.log(ex));
+        } else {
+            // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
+            var dc = peer.connect('root');
+            dc.on('open', function () {
+                console.log('dc open');
+                dc.close();
+                notifyJoinPolling();
+            });
+        }
+    });
 }
 
 var notifyJoinTOId = null;
@@ -293,7 +295,7 @@ function callSetup(call) {
             peer.branchData = null;
         }
     });
-    
+
     call.on('close', _ => {
         console.log('call on "close"');
         if (peer.rootId === peer.id) {
