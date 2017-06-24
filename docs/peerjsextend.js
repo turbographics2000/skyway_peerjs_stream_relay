@@ -364,23 +364,6 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
         });
     }
 
-    function addLogMsg(str, type) {
-        if (!logContainer) return;
-        const msgType = document.createElement('span');
-        msgType.classList.add('type');
-        msgType.textContent = type;
-        const msg = document.createElement('span');
-        msg.classList.add('log')
-        msg.textContent = str;
-        const logLine = document.createElement('div');
-        logLine.classList.add('log-line');
-        logLine.classList.add(type);
-        logLine.appendChild(msgType);
-        logLine.appendChild(msg);
-        logContainer.appendChild(logLine);
-        logLine.scrollIntoView();
-    }
-
     function updateTree() {
         if (!treeContainer) return;
         treeContainer.innerHTML = '';
@@ -412,3 +395,21 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     }
 
 }
+
+function addLogMsg(str, type) {
+    if (!logContainer) return;
+    const msgType = document.createElement('span');
+    msgType.classList.add('type');
+    msgType.textContent = type;
+    const msg = document.createElement('span');
+    msg.classList.add('log')
+    msg.textContent = str;
+    const logLine = document.createElement('div');
+    logLine.classList.add('log-line');
+    logLine.classList.add(type);
+    logLine.appendChild(msgType);
+    logLine.appendChild(msg);
+    logContainer.appendChild(logLine);
+    logLine.scrollIntoView();
+}
+
