@@ -29,7 +29,7 @@ function getStream(elm, useTestPattern) {
             audio: false
         });
     }
-    p.then(strm => {
+    return p.then(strm => {
         elm.srcObject = strm;
         return strm;
     }).catch(ex => console.log('getUserMedia error.', ex));
