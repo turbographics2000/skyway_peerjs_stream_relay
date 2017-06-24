@@ -20,17 +20,19 @@ function peerSetup(isRoot) {
 }
 
 function getStream(elm, useTestPattern) {
+    var p = null;
     if (useTestPattern) {
-        return testPattern();
+        p = testPattern();
     } else {
-        return navigator.mediaDevices.getUserMedia({
+        p = navigator.mediaDevices.getUserMedia({
             video: true,
             audio: false
-        }).then(strm => {
-            elm.srcObject = strm;
-            return strm;
-        }).catch(ex => console.log('getUserMedia error.', ex));
+        });
     }
+    p.then(strm => {
+        elm.srcObject = strm;
+        return strm;
+    }).catch(ex => console.log('getUserMedia error.', ex));
 }
 
 function testPattern() {
