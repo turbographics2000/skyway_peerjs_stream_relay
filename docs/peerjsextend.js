@@ -151,19 +151,16 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     peer.branchData = null;
     peer.levelBranches = [];
     peer.dicBranches = {};
+    peer.branchSrcConnection = null;
+    peer.branchConnections = {};
     peer.closeNotifiyIgnoreIds = {};
-    //peer.branchSrcConnection = null;
-    let branchSrcConnection = null;
-    //peer.branchConnections = {};
-    let branchConnections = {};
-    //peer.stream = null;
-    let stream = null;
-    //peer.previewElement = previewElement;
-    if (typeof getStream === 'function') {
+    peer.stream = null;
+    peer.previewElement = preview;
+    if(typeof getStream === 'function') {
         peer.getStream = getStream;
-    } else if (getStream === 'testpattern') {
+    } else if(getStream === 'testpattern') {
         peer.getStream = getTestPatternStream.bind(null, false);
-    } else if (getStream === 'testpattern_time') {
+    } else if(getStream === 'testpattern_time') {
         peer.getStream = getTestPatternStream.bind(null, true);
     } else {
         peer.getStream = getWebCamStream;
@@ -227,8 +224,8 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_stream', req => {
         addLogMsg('request_stream from:' + req.fromId, 'event');
-        var call = peer.call(req.fromId, stream);
-        branchConnections[req.fromId] = call;
+        var call = peer.call(req.fromId, peer.stream);
+        peer.branchConnections[req.fromId] = call;
         // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
         call.pc.addEventListener('iceconnectionstatechange', function () {
             if (this.iceConnectionState === 'disconnected') {
@@ -256,11 +253,8 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
 
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
-        peer.getStream(selfView).then(strm => {
-            if (previewElement) {
-                previewElement.srcObject = strm;
-            }
-            stream = strm;
+        peer.getStream(selfView).then(stream => {
+            peer.stream = stream;
         }).catch(ex => console.log(ex));
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
@@ -271,129 +265,101 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
             notifyJoinPolling();
         });
     }
+}
 
-    var notifyJoinTOId = null;
-    function notifyJoinPolling() {
-        peer.notifyJoin();
-        notifyJoinTOId = setTimeout(notifyJoinPolling, 3000);
-    }
+var notifyJoinTOId = null;
+function notifyJoinPolling() {
+    peer.notifyJoin();
+    notifyJoinTOId = setTimeout(notifyJoinPolling, 3000);
+}
 
-    function callSetup(call) {
-        call.on('stream', stream => {
-            console.log('call on "stream"');
-            remoteView.srcObject = peer.stream = stream;
-            peer.branchSrcConnection = call;
-            if (peer.branchData) {
-                noNotifyCloseBranch();
-                peer.branchData.children.forEach(branchId => {
-                    branchConnections[branchId] = peer.call(branchId, peer.stream);
-                });
-                peer.branchData = null;
-            }
-        });
-        call.on('close', _ => {
-            console.log('call on "close"');
-            if (peer.rootId === peer.id) {
-                var migrateData = peer.migrateBranch.call(peer, call.peer);
-                updateTree();
-                if (migrateData) {
-                    peer.responseBranchData(migrateData, migrateData.id);
-                }
-            } else if (peer.branchSrcConnection.peer === call.peer) {
-                peer.branchSrcConnection = null;
-                noNotifyCloseBranch();
-            } else if (branchConnections[call.peer]) {
-                delete branchConnections[call.peer];
-                if (peer.closeNotifiyIgnoreIds[call.peer]) {
-                    delete peer.closeNotifiyIgnoreIds[call.peer];
-                } else {
-                    peer.notifyCloseBranch(call.peer);
-                }
-            }
-        });
-    }
-
-    function getWebCamStream(elm, useTestPattern) {
-        return navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: false
-        });
-    }
-
-    function getTestPatternStream(displayTime) {
-        return new Promise((resolve, reject) => {
-            try {
-                var cnv = document.createElement('canvas');
-                cnv.width = 160;
-                cnv.height = 120;
-                cnv.style.position = 'absolute';
-                cnv.style.top = '-10000px';
-                document.body.appendChild(cnv);
-                var ctx = cnv.getContext('2d');
-                var rafId = null;
-                var img = document.createElement('img');
-                var testPattern = _ => {
-                    rafId = requestAnimationFrame(testPattern);
-                    ctx.clearRect(0, 0, 160, 120);
-                    ctx.drawImage(img, 0, 0);
-                    var now = new Date();
-                    var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
-                    ctx.textBaseline = 'middle';
-                    ctx.textAlign = 'center';
-                    ctx.font = '30px monospace';
-                    ctx.fillStyle = 'white';
-                    ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
-                };
-                img.onload = _ => {
-                    testPattern(img);
-                    resolve(cnv.captureStream(10));
-                }
-                img.src = 'SMPTE_Color_Bars_160x120.png';
-            } catch (ex) {
-                reject(ex);
-            }
-        });
-    }
-
-    function noNotifyCloseBranch() {
-        Object.keys(branchConnections).forEach(branchId => {
-            if (branchConnections[branchId]) {
-                peer.closeNotifiyIgnoreIds[branchId] = true;
-                branchConnections[branchId].close();
-            }
-        });
-    }
-
-    function updateTree() {
-        if (!treeContainer) return;
-        treeContainer.innerHTML = '';
-        if (peer.levelBranches.length > 0) {
-            drawTree();
+function callSetup(call) {
+    call.on('stream', stream => {
+        console.log('call on "stream"');
+        remoteView.srcObject = peer.stream = stream;
+        peer.branchSrcConnection = call;
+        if (peer.branchData) {
+            noNotifyCloseBranch();
+            peer.branchData.children.forEach(branchId => {
+                peer.branchConnections[branchId] = peer.call(branchId, peer.stream);
+            });
+            peer.branchData = null;
         }
-    }
-
-    function drawTree() {
-        if (!treeContainer) return;
-        var func = (level, id, pElm) => {
-            var ul = document.createElement('ul');
-            var li = document.createElement('li');
-            var div = document.createElement('div');
-            div.textContent = id;
-            li.appendChild(div);
-            if (peer.levelBranches[level][id].children.length) {
-                var cul = document.createElement('ul');
-                peer.levelBranches[level][id].children.forEach(childId => {
-                    if (level < peer.levelBranches.length - 1) {
-                        func(level + 1, childId, li);
-                    }
-                });
+    });
+    call.on('close', _ => {
+        console.log('call on "close"');
+        if (peer.rootId === peer.id) {
+            var migrateData = peer.migrateBranch.call(peer, call.peer);
+            updateTree();
+            if (migrateData) {
+                peer.responseBranchData(migrateData, migrateData.id);
             }
-            ul.appendChild(li);
-            pElm.appendChild(ul);
-        };
-        func(0, Object.keys(peer.levelBranches[0])[0], treeContainer);
-    }
+        } else if (peer.branchSrcConnection.peer === call.peer) {
+            peer.branchSrcConnection = null;
+            noNotifyCloseBranch();
+        } else if (peer.branchConnections[call.peer]) {
+            delete peer.branchConnections[call.peer];
+            if (peer.closeNotifiyIgnoreIds[call.peer]) {
+                delete peer.closeNotifiyIgnoreIds[call.peer];
+            } else {
+                peer.notifyCloseBranch(call.peer);
+            }
+        }
+    });
+}
 
+function getWebCamStream(elm, useTestPattern) {
+    return navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+    }).then(strm => {
+        elm.srcObject = strm;
+        return strm;
+    });
+}
+
+function getTestPatternStream(displayTime) {
+    return new Promise((resolve, reject) => {
+        try {
+            var cnv = document.createElement('canvas');
+            cnv.width = 160;
+            cnv.height = 120;
+            cnv.style.position = 'absolute';
+            cnv.style.top = '-10000px';
+            document.body.appendChild(cnv);
+            var ctx = cnv.getContext('2d');
+            var rafId = null;
+            var img = document.createElement('img');
+            var testPattern = _ => {
+                rafId = requestAnimationFrame(testPattern);
+                ctx.clearRect(0, 0, 160, 120);
+                ctx.drawImage(img, 0, 0);
+                var now = new Date();
+                var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                ctx.font = '30px monospace';
+                ctx.fillStyle = 'white';
+                ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+            };
+            img.onload = _ => {
+                testPattern(img);
+                resolve(cnv.captureStream(10));
+            }
+            img.src = 'SMPTE_Color_Bars_160x120.png';
+        } catch (ex) {
+            reject(ex);
+        }
+    });
+}
+
+function noNotifyCloseBranch() {
+    Object.keys(peer.branchConnections).forEach(branchId => {
+        if (peer.branchConnections[branchId]) {
+            peer.closeNotifiyIgnoreIds[branchId] = true;
+            peer.branchConnections[branchId].close();
+        }
+    });
 }
 
 function addLogMsg(str, type) {
@@ -411,5 +377,35 @@ function addLogMsg(str, type) {
     logLine.appendChild(msg);
     logContainer.appendChild(logLine);
     logLine.scrollIntoView();
+}
+
+function updateTree() {
+    if (!treeContainer) return;
+    treeContainer.innerHTML = '';
+    if (peer.levelBranches.length > 0) {
+        drawTree();
+    }
+}
+
+function drawTree() {
+    if (!treeContainer) return;
+    var func = (level, id, pElm) => {
+        var ul = document.createElement('ul');
+        var li = document.createElement('li');
+        var div = document.createElement('div');
+        div.textContent = id;
+        li.appendChild(div);
+        if (peer.levelBranches[level][id].children.length) {
+            var cul = document.createElement('ul');
+            peer.levelBranches[level][id].children.forEach(childId => {
+                if (level < peer.levelBranches.length - 1) {
+                    func(level + 1, childId, li);
+                }
+            });
+        }
+        ul.appendChild(li);
+        pElm.appendChild(ul);
+    };
+    func(0, Object.keys(peer.levelBranches[0])[0], treeContainer);
 }
 
