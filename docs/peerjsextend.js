@@ -155,7 +155,7 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     peer.branchConnections = {};
     peer.closeNotifiyIgnoreIds = {};
     peer.stream = null;
-    peer.previewElement = preview;
+    peer.previewElement = previewElement;
     if(typeof getStream === 'function') {
         peer.getStream = getStream;
     } else if(getStream === 'testpattern') {
