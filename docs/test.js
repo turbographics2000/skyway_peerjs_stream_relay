@@ -19,7 +19,7 @@ function peerSetup(isRoot) {
             peer, 
             rootId: 'root', 
             branchCount: 2, 
-            getStream: 'testpattern',
+            getStream: 'testpattern_time',
             previewElement: selfView
         });
     });
