@@ -332,6 +332,10 @@ function getTestPatternStream(displayTime) {
             cnv.style.top = '-10000px';
             document.body.appendChild(cnv);
             var ctx = cnv.getContext('2d');
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.font = '30px monospace';
+            ctx.fillStyle = 'white';
             var rafId = null;
             var img = document.createElement('img');
             var testPattern = _ => {
@@ -340,11 +344,9 @@ function getTestPatternStream(displayTime) {
                 ctx.drawImage(img, 0, 0);
                 var now = new Date();
                 var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = 'center';
-                ctx.font = '30px monospace';
-                ctx.fillStyle = 'white';
-                ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+                if (displayTime) {
+                    ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+                }
             };
             img.onload = _ => {
                 testPattern(img);
