@@ -196,9 +196,9 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
 
     // 配置結果を受信したとき視聴者(ブランチ)側で発生するイベント
     peer.on('branch_data', data => {
-        if (notifyJoinSIId !== null) {
-            clearInterval(notifyJoinSIId);
-            notifyJoinSIId = null;
+        if (notifyJoinTOId !== null) {
+            clearInterval(notifyJoinTOId);
+            notifyJoinTOId = null;
         }
         addLogMsg('branch_data', 'event');
         console.log('branch_data', data);
