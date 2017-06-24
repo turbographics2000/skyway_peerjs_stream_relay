@@ -145,7 +145,7 @@
 })();
 
 // Peerインスタンスを拡張
-function peerInstanceExtend(peer, rootId, maxBranchCnt) {
+function peerInstanceExtend(peer, rootId, maxBranchCnt, useTestPattern) {
     peer.rootId = rootId;
     peer.maxBranchCnt = maxBranchCnt;
     peer.branchData = null;
@@ -243,7 +243,7 @@ function peerInstanceExtend(peer, rootId, maxBranchCnt) {
 
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
-        webCamSetup(selfView).then(stream => peer.stream = stream);
+        getStream(selfView, useTestPattern).then(stream => peer.stream = stream);
     } else {
         // DataChannelで接続テストを行い接続出来たら、ストリームの接続を行う
         var dc = peer.connect('root');

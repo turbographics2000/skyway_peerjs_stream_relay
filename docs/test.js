@@ -15,17 +15,48 @@ btnStart.onclick = evt => {
 function peerSetup(isRoot) {
     peer.on('open', id => {
         myIdDisp.textContent = myId = id;
-        peerInstanceExtend(peer, 'root', 2);
+        peerInstanceExtend(peer, 'root', 2, true);
     });
 }
 
-function webCamSetup(elm) {
-    return navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false
-    }).then(strm => {
-        elm.srcObject = strm;
-        return strm;
-    }).catch(ex => console.log('getUserMedia error.', ex));
+function getStream(elm, useTestPattern) {
+    if (useTestPattern) {
+        return testPattern();
+    } else {
+        return navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        }).then(strm => {
+            elm.srcObject = strm;
+            return strm;
+        }).catch(ex => console.log('getUserMedia error.', ex));
+    }
+}
+
+function testPattern() {
+    return new Promise((resolve, reject) => {
+        var cnv = document.createElement('canvas');
+        cnv.width = 160;
+        cnv.height = 120;
+        var ctx = cnv.getContext('2d');
+        var rafId = null;
+        var img = document.createElement('img');
+        var testPattern = img => {
+            rafId = requestAnimationFrame(testPattern);
+            ctx.clearRect(0, 0, 160, 120);
+            ctx.drawImage(img);
+            var now = new Date();
+            var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.font = 'monospace 10px';
+            ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
+        };
+        img.onload = _ => {
+            testPattern(img);
+            resolve(cnv.captureStream(10));
+        }
+        img.src = 'SMPTE_Color_Bars_160x120.png';
+    });
 }
 
