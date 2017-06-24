@@ -54,7 +54,7 @@ function testPattern() {
             var hms = [now.getHours(), now.getMinutes(), now.getSeconds()].map(x => ('0' + x).slice(-2)).join(':');
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            ctx.font = 'monospace 30px';
+            ctx.font = '30px monospace';
             ctx.fillStyle = 'white';
             ctx.fillText(hms, cnv.width / 2, cnv.height / 2);
         };
