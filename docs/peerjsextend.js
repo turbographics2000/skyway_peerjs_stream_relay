@@ -334,7 +334,7 @@ function getTestPatternStream(displayTime) {
             var ctx = cnv.getContext('2d');
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            ctx.font = '30px 500 monospace';
+            ctx.font = '900 30px monospace';
             ctx.fillStyle = 'white';
             var rafId = null;
             var img = document.createElement('img');
