@@ -156,11 +156,11 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     peer.closeNotifiyIgnoreIds = {};
     peer.stream = null;
     peer.previewElement = previewElement;
-    if(typeof getStream === 'function') {
+    if (typeof getStream === 'function') {
         peer.getStream = getStream;
-    } else if(getStream === 'testpattern') {
+    } else if (getStream === 'testpattern') {
         peer.getStream = getTestPatternStream.bind(null, false);
-    } else if(getStream === 'testpattern_time') {
+    } else if (getStream === 'testpattern_time') {
         peer.getStream = getTestPatternStream.bind(null, true);
     } else {
         peer.getStream = getWebCamStream;
@@ -253,7 +253,10 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
 
     console.log('peer on "open"');
     if (peer.rootId === peer.id) {
-        peer.getStream(selfView).then(stream => {
+        peer.getStream().then(stream => {
+            if (peer.previewElement) {
+                peer.previewElement.srcObject = stream;
+            }
             peer.stream = stream;
         }).catch(ex => console.log(ex));
     } else {
@@ -308,13 +311,10 @@ function callSetup(call) {
     });
 }
 
-function getWebCamStream(elm, useTestPattern) {
+function getWebCamStream() {
     return navigator.mediaDevices.getUserMedia({
         video: true,
         audio: false
-    }).then(strm => {
-        elm.srcObject = strm;
-        return strm;
     });
 }
 
