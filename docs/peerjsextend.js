@@ -227,7 +227,7 @@ function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewE
     // ブランチからストリームの送信をリクエストしたときにブランチ元(ブランチソース)側で発生するイベント
     peer.on('request_stream', req => {
         addLogMsg('request_stream from:' + req.fromId, 'event');
-        var call = peer.call(req.fromId, peer.stream);
+        var call = peer.call(req.fromId, stream);
         branchConnections[req.fromId] = call;
         // 'closed'や'failed'だと数秒かかってしまうので'disconnected'で閉じるようにする
         call.pc.addEventListener('iceconnectionstatechange', function () {
