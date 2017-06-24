@@ -293,6 +293,7 @@ function callSetup(call) {
             peer.branchData = null;
         }
     });
+    
     call.on('close', _ => {
         console.log('call on "close"');
         if (peer.rootId === peer.id) {
