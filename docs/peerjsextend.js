@@ -146,6 +146,7 @@
 
 // Peerインスタンスを拡張
 function peerInstanceExtend({ peer, rootId, branchCount = 5, getStream, previewElement }) {
+    peer.rootId = rootId;
     peer.branchCount = branchCount;
     peer.branchData = null;
     peer.levelBranches = [];
